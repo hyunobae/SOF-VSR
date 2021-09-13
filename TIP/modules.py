@@ -116,7 +116,7 @@ class OFRnet(nn.Module):
         b, c, h, w = x_L1.size() # input pair가 2개여서 2인 듯 하다.
         input_L1 = torch.cat((x_L1, torch.zeros(b, 2, h, w).cuda()), 1) # x_L1이랑 차원 맞추려고 0으로 채운 optical flow랑 cat
         optical_flow_L1 = self.RNN2(self.RNN1(input_L1))
-        optical_flow_L1_upscaled = F.interpolate(optical_flow_L1, scale_factor=2, mode='bilinear', align_corners=False) * 2
+        optical_flow_L1_upscaled = F.interpolate(optical_flow_L1, scale_factor=2, mode='bilinear', align_corners=False) * 2 # +2나 *2나 똑같은 효과
 
         #Part 2
         # t-1 + center frame LR과 optical flow warp

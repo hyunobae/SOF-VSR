@@ -17,6 +17,7 @@ def parse_args():
     parser.add_argument('--testset_dir', type=str, default='data/train/')
     parser.add_argument('--chop_forward', type=bool, default=False)
     parser.add_argument('--version', type=str, default='sof')
+    parser.add_argument('--gpu_num', type=int, default=0)
     return parser.parse_args()
 
 
@@ -62,7 +63,7 @@ def main(cfg):
     net = SOFVSR(cfg, is_training=False)
     ckpt = torch.load('./log/'+ cfg.version +'/' + cfg.degradation + '_x' + str(cfg.scale) + '.pth')
     net.load_state_dict(ckpt)
-    torch.cuda.set_device(2)
+    torch.cuda.set_device(cfg.gpu_num)
     print(torch.cuda.current_device())
     if cfg.gpu_mode:
         net.cuda()

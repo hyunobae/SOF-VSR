@@ -21,6 +21,7 @@ def parse_args():
     parser.add_argument('--trainset_dir', type=str, default='data/train')
     parser.add_argument('--version', type=str, default='sof') # mSOF-VSR이 변화준 모델
     parser.add_argument('--valset_dir', type=str, default='data/val')
+    parser.add_argument('--gpu_num', type=int, default=0)
     return parser.parse_args()
 
 
@@ -34,8 +35,8 @@ def main(cfg):
     # dataloader
     train_set = TrainsetLoader(cfg)
     train_loader = DataLoader(train_set, num_workers=10, batch_size=cfg.batch_size, shuffle=True)
-    val_set = ValidationsetLoader(cfg)
-    val_loader = DataLoader(val_set, num_workers=5, batch_size=32, shuffle=True)
+    # val_set = ValidationsetLoader(cfg)
+    # val_loader = DataLoader(val_set, num_workers=5, batch_size=32, shuffle=True)
 
     # train
     optimizer = torch.optim.Adam(net.parameters(), lr=1e-3)
@@ -97,42 +98,42 @@ def main(cfg):
             torch.save(net.state_dict(), save_path + '/' + save_name)
             loss_list = []
 
-        if idx_iter % 1000:
-            net.eval()
-            with torch.no_grad():
-                val_loss = 0.0
-                for idx, (lr, hr) in enumerate(val_loader):
-                    b, n_frames, h_lr, w_lr = lr.size()  # 배치, frame수, 높이, 넓이로 나옴
-                    idx_center = (n_frames - 1) // 2
-
-                    lr, hr = Variable(lr), Variable(hr)
-                    if cfg.gpu_mode:
-                        lr = lr.cuda()
-                        hr = hr.cuda()
-                    lr = lr.view(b, -1, 1, h_lr, w_lr)  # batch, frame 갯수, channel수, h, w로 reshape하는 과정
-                    hr = hr.view(b, -1, 1, h_lr * cfg.scale, w_lr * cfg.scale)
-                    flow_l1, flow_l2, flow_l3, sr = net(lr)
-
-                    # loss
-                    loss_SR = criterion(sr, hr[:, idx_center, :, :, :])
-                    loss_OFR = torch.zeros(1).cuda()
-
-                    for i in range(n_frames):
-                        if i != idx_center:
-                            loss_L1 = OFR_loss(F.avg_pool2d(LR[:, i, :, :, :], kernel_size=2),
-                                               F.avg_pool2d(LR[:, idx_center, :, :, :], kernel_size=2),
-                                               flow_L1[i])
-                            loss_L2 = OFR_loss(lr[:, i, :, :, :], lr[:, idx_center, :, :, :], flow_l2[i])
-                            loss_L3 = OFR_loss(hr[:, i, :, :, :], hr[:, idx_center, :, :, :], flow_l3[i])
-                            loss_OFR = loss_OFR + loss_L3 + 0.2 * loss_L2 + 0.1 * loss_L1
-
-                    loss = loss_SR + 0.01 * loss_OFR / (n_frames - 1)
-                    loss_list.append(loss.data.cpu())
+        # if idx_iter % 1000:
+        #     net.eval()
+        #     with torch.no_grad():
+        #         val_loss = 0.0
+        #         for idx, (lr, hr) in enumerate(val_loader):
+        #             b, n_frames, h_lr, w_lr = lr.size()  # 배치, frame수, 높이, 넓이로 나옴
+        #             idx_center = (n_frames - 1) // 2
+        #
+        #             lr, hr = Variable(lr), Variable(hr)
+        #             if cfg.gpu_mode:
+        #                 lr = lr.cuda()
+        #                 hr = hr.cuda()
+        #             lr = lr.view(b, -1, 1, h_lr, w_lr)  # batch, frame 갯수, channel수, h, w로 reshape하는 과정
+        #             hr = hr.view(b, -1, 1, h_lr * cfg.scale, w_lr * cfg.scale)
+        #             flow_l1, flow_l2, flow_l3, sr = net(lr)
+        #
+        #             # loss
+        #             loss_SR = criterion(sr, hr[:, idx_center, :, :, :])
+        #             loss_OFR = torch.zeros(1).cuda()
+        #
+        #             for i in range(n_frames):
+        #                 if i != idx_center:
+        #                     loss_L1 = OFR_loss(F.avg_pool2d(LR[:, i, :, :, :], kernel_size=2),
+        #                                        F.avg_pool2d(LR[:, idx_center, :, :, :], kernel_size=2),
+        #                                        flow_L1[i])
+        #                     loss_L2 = OFR_loss(lr[:, i, :, :, :], lr[:, idx_center, :, :, :], flow_l2[i])
+        #                     loss_L3 = OFR_loss(hr[:, i, :, :, :], hr[:, idx_center, :, :, :], flow_l3[i])
+        #                     loss_OFR = loss_OFR + loss_L3 + 0.2 * loss_L2 + 0.1 * loss_L1
+        #
+        #             loss = loss_SR + 0.01 * loss_OFR / (n_frames - 1)
+        #             loss_list.append(loss.data.cpu())
 
 
 
 if __name__ == '__main__':
     cfg = parse_args()
-    torch.cuda.set_device(3)
+    torch.cuda.set_device(cfg.gpu_num)
     print(torch.cuda.current_device())
     main(cfg)
