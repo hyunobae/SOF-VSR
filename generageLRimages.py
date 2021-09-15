@@ -1,7 +1,7 @@
 import cv2
 import os
 
-pth = 'D:/TVD/TVD_960/hevc/frame'
+pth = 'D:/CDVL/yuv/hevc/frame'
 
 directory = os.listdir(pth)
 

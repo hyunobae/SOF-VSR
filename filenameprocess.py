@@ -1,7 +1,7 @@
 import os
 import shutil
 
-pth = 'D:/TVD/TVD_960/hevc/frame'
+pth = 'D:/CDVL/yuv/hevc/frame'
 
 directory = os.listdir(pth)
 
@@ -11,18 +11,17 @@ for i in directory:  # hr 바꾸기
 
     subdir = os.listdir(pth + '/' + i)
     print(subdir)
-    lrdir = os.listdir(pth + '/' + i + '/' + subdir[1])
-    print(pth + '/' + i + '/' + subdir[1])
+    lrdir = os.listdir(pth + '/' + i + '/' + subdir[0])
+    print(pth + '/' + i + '/' + subdir[0])
     print(lrdir)
 
     for j in range(len(lrdir)):  # hr directory
         origname = lrdir[j][:-4]
+        print(origname)
+        # fname = origname[:-4]
+        # print(fname)
 
-        fname = origname[3:]
-        print(fname)
-
-        if fname == origname[3:]:
-            os.rename(pth + '/' + i + '/' + subdir[1] + '/' + origname + '.png',
-                      pth + '/' + i + '/' + subdir[1] + '/' + 'hr' + str(fname) + '.png')
-            print(pth + '/' + i + '/' + subdir[1] + '/' + origname + '.png' + ' -> ' + pth + '/' + i + '/' + subdir[
-                1] + '/' + 'hr' + str(fname) + '.png')
+        os.rename(pth + '/' + i + '/' + subdir[0] + '/' + origname + '.png',
+                    pth + '/' + i + '/' + subdir[0] + '/' + 'hr' + str(int(origname)-1) + '.png')
+        print(pth + '/' + i + '/' + subdir[0] + '/' + origname + '.png' + ' -> ' + pth + '/' + i + '/' + subdir[
+            0] + '/' + 'hr' + str(origname) + '.png')

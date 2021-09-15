@@ -1,7 +1,7 @@
 from torch.autograd import Variable
 from torch.utils.data import DataLoader
 from modules import SOFVSR
-from data_utils import TrainsetLoader, OFR_loss, ValidationsetLoader
+from data_utils import TrainsetLoader, OFR_loss
 import torch.backends.cudnn as cudnn
 import argparse
 import torch

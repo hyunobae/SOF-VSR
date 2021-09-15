@@ -29,35 +29,63 @@ def get_msof_idx(idx_frame):
         right_frame = left_p
 
     elif idx_frame % 16 == 0:  # if cur frame is I frame
-        left_frame = idx_frame - 16
-        right_frame = idx_frame + 16
+        left_frame = idx_frame - 1  # 바로 옆 p frame
+        right_frame = idx_frame + 3  # B 중 좋은 frame
 
     # if cur frame is P frame
     elif idx_frame == left_p or idx_frame == mid_p or idx_frame == right_p:  # if cur frame is P frame
         if idx_frame == left_p:
-            left_frame = left_I
+            left_frame = idx_frame - 2  # t-2의 B frame
             right_frame = mid_p
 
-        elif idx_frame == mid_p:  # 현재 p frame 바로 옆이 I면
-            left_frame = left_p
+        elif idx_frame == mid_p:
+            left_frame = idx_frame - 2
             right_frame = right_p
 
         elif idx_frame == right_p:
-            left_frame = mid_p
+            left_frame = idx_frame - 2
             right_frame = right_I
 
     else:  # if cur frame is neither I frame nor P frame -> B
+        # (p-1)은 I와 I 사이에 몇번째 p block인지 판단함 -> p block은 bbbbp를 의미
         if (p - 1) % 3 == 0:  # cur frame의 좌측 I frame에 인접한 B
-            left_frame = left_I
-            right_frame = left_p
+            if idx_frame == (left_p - 1):  # BBB B P에서 ^B^인 경우
+                left_frame = idx_frame - 1
+                right_frame = left_p
+
+            elif idx_frame == left_p - 2:  # p frame -2 는 항상 좋은 B frame이다.
+                left_frame = left_I
+                right_frame = left_p
+
+            else:
+                left_frame = left_I
+                right_frame = left_p - 2
 
         elif (p - 1) % 3 == 2:  # cur frame의 우측에 I frame이 위치할때
-            left_frame = mid_p
-            right_frame = right_I
+            if idx_frame == right_p - 1:
+                left_frame = idx_frame - 1
+                right_frame = right_I
 
-        else:
-            left_frame = left_p
-            right_frame = mid_p
+            elif idx_frame == right_p - 2:
+                left_frame = mid_p
+                right_frame = right_I
+
+            else:
+                left_frame = mid_p
+                right_frame = right_p - 2
+
+        else:  # 중간 p block인 경우
+            if idx_frame == mid_p - 1:
+                left_frame = idx_frame - 1
+                right_frame = mid_p
+
+            elif idx_frame == mid_p - 2:
+                left_frame = left_p
+                right_frame = mid_p
+
+            else:
+                left_frame = left_p
+                right_frame = mid_p - 2
 
     return left_frame, right_frame
 
@@ -206,6 +234,7 @@ class TestsetLoader(Dataset):
     def __len__(self):
         # return len(self.frame_list) - 2
         return 31
+
 
 #
 # class ValidationsetLoader(Dataset):
