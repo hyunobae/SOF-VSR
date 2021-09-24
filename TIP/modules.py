@@ -200,7 +200,7 @@ def channel_shuffle(x, groups):
     return x
 
 
-def optical_flow_warp(image, image_optical_flow):
+def optical_flow_warp(image, image_optical_flow, patch_size):
     """
     Arguments
         image_ref: reference images tensor, (b, c, h, w)
@@ -217,8 +217,8 @@ def optical_flow_warp(image, image_optical_flow):
     if image_optical_flow.is_cuda == True:
         grid = grid.cuda()
 
-    flow_0 = torch.unsqueeze(image_optical_flow[:, 0, :, :] * 31 / (w - 1), dim=1)
-    flow_1 = torch.unsqueeze(image_optical_flow[:, 1, :, :] * 31 / (h - 1), dim=1)
+    flow_0 = torch.unsqueeze(image_optical_flow[:, 0, :, :] * (patch_size-1) / (w - 1), dim=1)
+    flow_1 = torch.unsqueeze(image_optical_flow[:, 1, :, :] * (patch_size-1) / (h - 1), dim=1)
     grid = grid + torch.cat((flow_0, flow_1),1)
     grid = grid.transpose(1, 2) # (128, 2, 32, 32) -> (128, 32, 2, 32)
     grid = grid.transpose(3, 2) # (128, 32, 2, 32) -> (128, 32, 32, 2)
