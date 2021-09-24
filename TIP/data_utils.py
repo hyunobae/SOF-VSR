@@ -379,8 +379,8 @@ def rgb2y(img_rgb):
     return image_y
 
 
-def OFR_loss(x0, x1, optical_flow, patch_size):
-    warped = optical_flow_warp(x0, optical_flow, patch_size)
+def OFR_loss(x0, x1, optical_flow):
+    warped = optical_flow_warp(x0, optical_flow)
     loss = torch.mean(torch.abs(x1 - warped)) + 0.1 * L1_regularization(optical_flow)
     return loss
 

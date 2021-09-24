@@ -72,9 +72,9 @@ def main(cfg):
             if i != idx_center:
                 loss_L1 = OFR_loss(F.avg_pool2d(LR[:, i, :, :, :], kernel_size=2),
                                    F.avg_pool2d(LR[:, idx_center, :, :, :], kernel_size=2),
-                                   flow_L1[i], cfg.patch_size)
-                loss_L2 = OFR_loss(LR[:, i, :, :, :], LR[:, idx_center, :, :, :], flow_L2[i], cfg.patch_size)
-                loss_L3 = OFR_loss(HR[:, i, :, :, :], HR[:, idx_center, :, :, :], flow_L3[i], cfg.patch_size)
+                                   flow_L1[i])
+                loss_L2 = OFR_loss(LR[:, i, :, :, :], LR[:, idx_center, :, :, :], flow_L2[i])
+                loss_L3 = OFR_loss(HR[:, i, :, :, :], HR[:, idx_center, :, :, :], flow_L3[i])
                 loss_OFR = loss_OFR + loss_L3 + 0.2 * loss_L2 + 0.1 * loss_L1
 
         loss = loss_SR + 0.01 * loss_OFR / (n_frames - 1)
