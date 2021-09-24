@@ -3,8 +3,10 @@ clear
 cd("D:/")
 %% evaluation on Vid4
 addpath('metrics')
-video_name = dir('cal/*');
+video_name = dir('D:/results/msof/BI_x4/*');
+gt_video_name = dir('D:/SOF-VSR/TIP/data/train/*');
 disp(video_name)
+disp(gt_video_name)
 
 scale = 4;
 degradation = 'BI';
@@ -17,9 +19,9 @@ for idx_video = 1:length(video_name)
     end
     psnr_video = [];
     ssim_video = [];
-    for idx_frame = 1:15 				% exclude the first and last 2 frames
-        hrname = ['cal/' video_name(idx_video).name '/hr' num2str(idx_frame,'%d') '.png'];
-        srname = ['cal/' video_name(idx_video).name '/sr_' num2str(idx_frame,'%d') '.png'];
+    for idx_frame = 2:32 				% exclude the first and last 2 frames
+        srname = ['D:/results/msof/BI_x4/' video_name(idx_video).name '/sr_' num2str(idx_frame,'%02d') '.png'];
+        hrname = ['D:/SOF-VSR/TIP/data/train/' video_name(idx_video).name '/hr/hr' num2str(idx_frame,'%d') '.png'];
         img_hr = imread(hrname);
         img_sr = imread(srname);
         
@@ -55,6 +57,6 @@ for idx_video = 1:length(video_name)
         
 end
 disp(['---------------------------------------------'])
-disp(['dataset ',degradation,'_x', num2str(scale) ,' SR---Mean PSNR: ', num2str(mean(psnr_vid4),'%0.4f'),', Mean SSIM: ', num2str(mean(ssim_vid4),'%0.4f')])
-fprintf(file, ['dataset ',degradation,'_x', num2str(scale) ,' SR---Mean PSNR: ', num2str(mean(psnr_vid4),'%0.4f'),', Mean SSIM: ', num2str(mean(ssim_vid4),'%0.4f'), '\n\n']);
+disp(['mSOF ',degradation,'_x', num2str(scale) ,' SR---Mean PSNR: ', num2str(mean(psnr_vid4),'%0.4f'),', Mean SSIM: ', num2str(mean(ssim_vid4),'%0.4f')])
+fprintf(file, ['mSOF ',degradation,'_x', num2str(scale) ,' SR---Mean PSNR: ', num2str(mean(psnr_vid4),'%0.4f'),', Mean SSIM: ', num2str(mean(ssim_vid4),'%0.4f'), '\n\n']);
 fclose(file);

@@ -1,0 +1,244 @@
+Bamboo_3840x2160_25fps_10bit_420---Mean PSNR: 27.4249, Mean SSIM: 0.7362
+
+BlackBird_3840x2160_25fps_10bit_420---Mean PSNR: 40.6037, Mean SSIM: 0.9507
+
+BoyDressing1_3840x2160_50fps_10bit_420---Mean PSNR: 31.1686, Mean SSIM: 0.8795
+
+BoyDressing2_3840x2160_50fps_10bit_420---Mean PSNR: 29.2806, Mean SSIM: 0.8399
+
+BoyMakingUp1_3840x2160_50fps_10bit_420---Mean PSNR: 35.3806, Mean SSIM: 0.9294
+
+BoyMakingUp2_3840x2160_50fps_10bit_420---Mean PSNR: 36.3510, Mean SSIM: 0.9465
+
+BoyWithCostume_3840x2160_50fps_10bit_420---Mean PSNR: 25.7533, Mean SSIM: 0.8205
+
+BuildingTouristAttraction1_3840x2160_25fps_10bit_420---Mean PSNR: 21.3788, Mean SSIM: 0.4774
+
+BuildingTouristAttraction2_3840x2160_25fps_10bit_420---Mean PSNR: 29.1936, Mean SSIM: 0.8702
+
+BuildingTouristAttraction3_3840x2160_25fps_10bit_420---Mean PSNR: 26.3682, Mean SSIM: 0.7657
+
+CableCar_3840x2160_25fps_10bit_420---Mean PSNR: 28.6406, Mean SSIM: 0.7682
+
+ChefCooking1_3840x2160_25fps_10bit_420---Mean PSNR: 18.0566, Mean SSIM: 0.7200
+
+ChefCooking2_3840x2160_25fps_10bit_420---Mean PSNR: 26.8487, Mean SSIM: 0.8885
+
+ChefCooking3_3840x2160_25fps_10bit_420---Mean PSNR: 25.2102, Mean SSIM: 0.8900
+
+ChefCooking4_3840x2160_25fps_10bit_420---Mean PSNR: 26.4800, Mean SSIM: 0.8837
+
+ChefCooking5_3840x2160_25fps_10bit_420---Mean PSNR: 35.6666, Mean SSIM: 0.9459
+
+ChefCuttingUp1_3840x2160_25fps_10bit_420---Mean PSNR: 21.7834, Mean SSIM: 0.8059
+
+ChefCuttingUp2_3840x2160_25fps_10bit_420---Mean PSNR: 25.3029, Mean SSIM: 0.9110
+
+DryRedPepper_3840x2160_25fps_10bit_420---Mean PSNR: 29.0199, Mean SSIM: 0.8779
+
+FallenLeaves_3840x2160_50fps_8bit_420---Mean PSNR: 34.9202, Mean SSIM: 0.9018
+
+FallingLeaves_3840x2160_50fps_8bit_420---Mean PSNR: 30.2933, Mean SSIM: 0.7850
+
+FilmMachine_3840x2160_25fps_10bit_420---Mean PSNR: 37.3285, Mean SSIM: 0.9510
+
+FlowingWater_3840x2160_50fps_10bit_420---Mean PSNR: 36.5776, Mean SSIM: 0.9155
+
+Fountain_3840x2160_50fps_10bit_420---Mean PSNR: 28.5922, Mean SSIM: 0.8517
+
+FruitOnTree_3840x2160_50fps_8bit_420---Mean PSNR: 46.1361, Mean SSIM: 0.9593
+
+GirlRunningOnGrass_3840x2160_50fps_10bit_420---Mean PSNR: 25.6349, Mean SSIM: 0.6661
+
+GirlThrowingLeaves_3840x2160_50fps_8bit_420---Mean PSNR: 33.0500, Mean SSIM: 0.8359
+
+GirlWalkingOnStreet_3840x2160_50fps_8bit_420---Mean PSNR: 37.5128, Mean SSIM: 0.9281
+
+GirlWatchingPhone_3840x2160_50fps_8bit_420---Mean PSNR: 51.0968, Mean SSIM: 0.9653
+
+GirlWithTeaSet1_3840x2160_25fps_10bit_420---Mean PSNR: 31.5228, Mean SSIM: 0.9094
+
+GirlWithTeaSet2_3840x2160_25fps_10bit_420---Mean PSNR: 33.8822, Mean SSIM: 0.9410
+
+GirlWithTeaSet3_3840x2160_25fps_10bit_420---Mean PSNR: 31.0134, Mean SSIM: 0.9281
+
+GirlsOnGrass1_3840x2160_50fps_10bit_420---Mean PSNR: 27.5520, Mean SSIM: 0.7669
+
+GirlsOnGrass2_3840x2160_50fps_10bit_420---Mean PSNR: 28.6796, Mean SSIM: 0.7273
+
+GrassLand_3840x2160_50fps_8bit_420---Mean PSNR: 43.2894, Mean SSIM: 0.9519
+
+HotPot_3840x2160_25fps_10bit_420---Mean PSNR: 28.9046, Mean SSIM: 0.9181
+
+HotelClerks_3840x2160_25fps_10bit_420---Mean PSNR: 24.7663, Mean SSIM: 0.8846
+
+LeavesOnTree_3840x2160_50fps_8bit_420---Mean PSNR: 41.3109, Mean SSIM: 0.9511
+
+LyingDog_3840x2160_25fps_10bit_420---Mean PSNR: 38.4812, Mean SSIM: 0.9420
+
+ManWithFilmMachine_3840x2160_25fps_10bit_420---Mean PSNR: 30.7454, Mean SSIM: 0.9150
+
+MountainsAndStairs1_3840x2160_24fps_10bit_420---Mean PSNR: 21.0500, Mean SSIM: 0.4840
+
+MountainsAndStairs2_3840x2160_25fps_10bit_420---Mean PSNR: 29.0695, Mean SSIM: 0.7172
+
+MountainsAndStairs3_3840x2160_25fps_10bit_420---Mean PSNR: 26.8153, Mean SSIM: 0.6483
+
+MountainsAndStairs4_3840x2160_25fps_10bit_420---Mean PSNR: 23.6475, Mean SSIM: 0.4302
+
+MountainsView1_3840x2160_25fps_10bit_420---Mean PSNR: 38.4200, Mean SSIM: 0.9452
+
+MountainsView2_3840x2160_25fps_10bit_420---Mean PSNR: 43.8728, Mean SSIM: 0.9605
+
+MountainsView3_3840x2160_25fps_10bit_420---Mean PSNR: 27.4495, Mean SSIM: 0.8097
+
+MountainsView4_3840x2160_25fps_10bit_420---Mean PSNR: 33.7237, Mean SSIM: 0.8568
+
+MovingBikesAndPedestrian4_3840x2160_50fps_10bit_420---Mean PSNR: 30.1957, Mean SSIM: 0.8830
+
+MovingBikes_3840x2160_50fps_8bit_420---Mean PSNR: 32.4430, Mean SSIM: 0.8664
+
+OilPainting1_3840x2160_25fps_10bit_420---Mean PSNR: 35.8272, Mean SSIM: 0.9427
+
+OilPainting2_3840x2160_25fps_10bit_420---Mean PSNR: 26.6392, Mean SSIM: 0.8930
+
+PeopleNearDesk_3840x2160_25fps_10bit_420---Mean PSNR: 27.9113, Mean SSIM: 0.8911
+
+PeopleOnGrass_3840x2160_50fps_10bit_420---Mean PSNR: 25.4652, Mean SSIM: 0.6906
+
+Plaque_3840x2160_25fps_10bit_420---Mean PSNR: 33.3221, Mean SSIM: 0.8757
+
+PressureCooker_3840x2160_25fps_10bit_420---Mean PSNR: 37.8901, Mean SSIM: 0.9588
+
+RawDucks_3840x2160_25fps_10bit_420---Mean PSNR: 37.3763, Mean SSIM: 0.9514
+
+RedBush_3840x2160_25fps_10bit_420---Mean PSNR: 35.2301, Mean SSIM: 0.9062
+
+RedRibbonsWithLocks_3840x2160_25fps_10bit_420---Mean PSNR: 28.8712, Mean SSIM: 0.9066
+
+RestaurantWaitress1_3840x2160_25fps_10bit_420---Mean PSNR: 30.2964, Mean SSIM: 0.8919
+
+RestaurantWaitress2_3840x2160_25fps_10bit_420---Mean PSNR: 30.3117, Mean SSIM: 0.9083
+
+RiverAndTrees_3840x2160_25fps_10bit_420---Mean PSNR: 25.2933, Mean SSIM: 0.6855
+
+RoastedDuck_3840x2160_25fps_10bit_420---Mean PSNR: 24.4940, Mean SSIM: 0.7692
+
+RoomTouristAttraction1_3840x2160_25fps_10bit_420---Mean PSNR: 25.4963, Mean SSIM: 0.7661
+
+RoomTouristAttraction2_3840x2160_25fps_10bit_420---Mean PSNR: 34.2532, Mean SSIM: 0.9064
+
+RoomTouristAttraction3_3840x2160_25fps_10bit_420---Mean PSNR: 27.6485, Mean SSIM: 0.7627
+
+RoomTouristAttraction4_3840x2160_25fps_10bit_420---Mean PSNR: 30.5284, Mean SSIM: 0.8941
+
+RoomTouristAttraction5_3840x2160_25fps_10bit_420---Mean PSNR: 30.8990, Mean SSIM: 0.8757
+
+RoomTouristAttraction6_3840x2160_25fps_10bit_420---Mean PSNR: 29.5411, Mean SSIM: 0.8363
+
+RoomTouristAttraction7_3840x2160_25fps_10bit_420---Mean PSNR: 30.8369, Mean SSIM: 0.8670
+
+SVT_1080p50seg01_original---Mean PSNR: 37.4549, Mean SSIM: 0.8418
+
+SVT_1080p50seg02_original---Mean PSNR: 27.3815, Mean SSIM: 0.8229
+
+SVT_1080p50seg03_original---Mean PSNR: 27.0602, Mean SSIM: 0.8162
+
+SVT_1080p50seg05_original---Mean PSNR: 32.2759, Mean SSIM: 0.8596
+
+SVT_1080p50seg07_original---Mean PSNR: 25.1636, Mean SSIM: 0.6886
+
+SVT_1080p50seg08_original---Mean PSNR: 35.7107, Mean SSIM: 0.9432
+
+SVT_1080p50seg10_original---Mean PSNR: 22.0371, Mean SSIM: 0.4221
+
+SVT_1080p50seg11_original---Mean PSNR: 32.2903, Mean SSIM: 0.8696
+
+SVT_1080p50seg12_original---Mean PSNR: 22.7012, Mean SSIM: 0.6369
+
+SVT_1080p50seg14_original---Mean PSNR: 23.2126, Mean SSIM: 0.6812
+
+SVT_1080p50seg15_original---Mean PSNR: 28.1483, Mean SSIM: 0.7921
+
+SVT_1080p50seg16_original---Mean PSNR: 30.8477, Mean SSIM: 0.8106
+
+SVT_1080p50seg18_original---Mean PSNR: 25.3708, Mean SSIM: 0.9093
+
+SVT_1080p50seg19_original---Mean PSNR: 28.5606, Mean SSIM: 0.9121
+
+StampCarving1_3840x2160_25fps_10bit_420---Mean PSNR: 30.5897, Mean SSIM: 0.9174
+
+StampCarving2_3840x2160_25fps_10bit_420---Mean PSNR: 35.6625, Mean SSIM: 0.9439
+
+StaticRocks_3840x2160_50fps_10bit_420---Mean PSNR: 31.8200, Mean SSIM: 0.8387
+
+StaticWaterAndBikes2_3840x2160_50fps_10bit_420---Mean PSNR: 29.4996, Mean SSIM: 0.7356
+
+SunAndTrees_3840x2160_25fps_10bit_420---Mean PSNR: 35.9585, Mean SSIM: 0.9433
+
+SunriseMountainHuang_3840x2160_25fps_10bit_420---Mean PSNR: 45.0218, Mean SSIM: 0.9636
+
+SunsetMountainHuang1_3840x2160_25fps_10bit_420---Mean PSNR: 42.8922, Mean SSIM: 0.9590
+
+SunsetMountainHuang2_3840x2160_25fps_10bit_420---Mean PSNR: 37.3934, Mean SSIM: 0.9524
+
+TUM_1080p_carving1_original---Mean PSNR: 21.9304, Mean SSIM: 0.6400
+
+TUM_1080p_carving2_original---Mean PSNR: 30.9738, Mean SSIM: 0.8881
+
+TUM_1080p_carving3_original---Mean PSNR: 25.0646, Mean SSIM: 0.7672
+
+TUM_1080p_carving4_original---Mean PSNR: 41.4471, Mean SSIM: 0.9574
+
+TUM_1080p_okt1_original---Mean PSNR: 28.1508, Mean SSIM: 0.8544
+
+TUM_1080p_okt2_original---Mean PSNR: 22.3547, Mean SSIM: 0.6757
+
+TUM_1080p_okt3_original---Mean PSNR: 30.8833, Mean SSIM: 0.8839
+
+TUM_1080p_okt4_original---Mean PSNR: 23.1911, Mean SSIM: 0.7186
+
+TUM_1080p_okt5_original---Mean PSNR: 26.4320, Mean SSIM: 0.8270
+
+TUM_1080p_okt6_original---Mean PSNR: 30.0056, Mean SSIM: 0.8830
+
+TUM_1080p_ski1_original---Mean PSNR: 27.7872, Mean SSIM: 0.8734
+
+TUM_1080p_ski2_original---Mean PSNR: 27.1170, Mean SSIM: 0.8901
+
+TUM_1080p_ski3_original---Mean PSNR: 25.5179, Mean SSIM: 0.8074
+
+TUM_1080p_ski4_original---Mean PSNR: 27.1129, Mean SSIM: 0.8284
+
+TUM_1080p_ski5_original---Mean PSNR: 26.2820, Mean SSIM: 0.7958
+
+TreeTrunkMoving_3840x2160_50fps_8bit_420---Mean PSNR: 28.0681, Mean SSIM: 0.7814
+
+TreesAndLeaves_3840x2160_50fps_10bit_420---Mean PSNR: 24.3413, Mean SSIM: 0.6898
+
+TreesOnMountains1_3840x2160_25fps_10bit_420---Mean PSNR: 38.4559, Mean SSIM: 0.9445
+
+TreesOnMountains2_3840x2160_25fps_10bit_420---Mean PSNR: 26.1122, Mean SSIM: 0.7384
+
+TreesOnMountains3_3840x2160_25fps_10bit_420---Mean PSNR: 25.5999, Mean SSIM: 0.6945
+
+WaterOnGrass1_3840x2160_50fps_8bit_420---Mean PSNR: 32.6117, Mean SSIM: 0.8578
+
+WaterOnGrass2_3840x2160_50fps_8bit_420---Mean PSNR: 33.2318, Mean SSIM: 0.9018
+
+Weave_3840x2160_25fps_10bit_420---Mean PSNR: 28.8851, Mean SSIM: 0.9025
+
+ntia_purple1d_original---Mean PSNR: 21.6075, Mean SSIM: 0.6176
+
+ntia_purple2d_original---Mean PSNR: 26.9558, Mean SSIM: 0.8171
+
+ntia_purple3d_original---Mean PSNR: 25.4082, Mean SSIM: 0.8252
+
+ntia_purple4d_original---Mean PSNR: 22.4934, Mean SSIM: 0.6606
+
+ntia_rainbow2d_original---Mean PSNR: 20.0147, Mean SSIM: 0.6266
+
+ntia_redgolde_original---Mean PSNR: 23.4806, Mean SSIM: 0.6612
+
+SOF BI_x4 SR---Mean PSNR: 29.7121, Mean SSIM: 0.8175
+
