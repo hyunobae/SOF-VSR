@@ -1,7 +1,7 @@
 import cv2
 import os
 
-pth = 'D:/CDVL/yuv/hevc/frame'
+pth = 'D:/VSRdataset/frame'
 
 directory = os.listdir(pth)
 
@@ -18,7 +18,8 @@ for i in directory:
         dst = cv2.resize(src, dsize=(0, 0), fx=0.25, fy=0.25, interpolation=cv2.INTER_CUBIC)
 
         fname = lrdir[j][:-4]
-        fnum = fname[2:]
-        name = pth + '/' + i + '/' + subdir[1] + '/lr' + fnum + '.png'
+        # fnum = fname[2:]
+        print(fname)
+        name = pth + '/' + i + '/' + subdir[1] + '/l' + fname + '.png'
         print(name)
         cv2.imwrite(name, dst)

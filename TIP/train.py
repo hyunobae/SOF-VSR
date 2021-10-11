@@ -22,6 +22,7 @@ def parse_args():
     parser.add_argument('--version', type=str, default='sof') # mSOF-VSR이 변화준 모델
     parser.add_argument('--valset_dir', type=str, default='data/val')
     parser.add_argument('--gpu_num', type=int, default=0)
+    parser.add_argument('--hevc_step', type=int, default=2)
     return parser.parse_args()
 
 

@@ -1,9 +1,9 @@
 clc
 clear
-cd("D:/")
+cd("D:/results")
 %% evaluation on Vid4
 addpath('metrics')
-video_name = dir('D:/results/msof/BI_x4/*');
+video_name = dir('D:/results/patchsz64/msof/BI_x4/*');
 gt_video_name = dir('D:/SOF-VSR/TIP/data/train/*');
 disp(video_name)
 disp(gt_video_name)
@@ -20,7 +20,7 @@ for idx_video = 1:length(video_name)
     psnr_video = [];
     ssim_video = [];
     for idx_frame = 2:32 				% exclude the first and last 2 frames
-        srname = ['D:/results/msof/BI_x4/' video_name(idx_video).name '/sr_' num2str(idx_frame,'%02d') '.png'];
+        srname = ['D:/results/msof/msof/BI_x4/' video_name(idx_video).name '/sr_' num2str(idx_frame,'%02d') '.png'];
         hrname = ['D:/SOF-VSR/TIP/data/train/' video_name(idx_video).name '/hr/hr' num2str(idx_frame,'%d') '.png'];
         img_hr = imread(hrname);
         img_sr = imread(srname);
@@ -35,10 +35,10 @@ for idx_video = 1:length(video_name)
         img_sr_ycbcr = rgb2ycbcr(img_sr);
         img_sr_y = img_sr_ycbcr(1+border:h-border, 1+border:w-border, 1);
         
-        flag = 0
+        flag = 0;
         temp = cal_psnr(img_sr_y, img_hr_y);
         if isinf(temp) == 0 
-            flag = 1
+            flag = 1;
             psnr_video(idx_frame) = temp;
             ssim_video(idx_frame) = cal_ssim(img_sr_y, img_hr_y);
         end

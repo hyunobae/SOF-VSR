@@ -1,8 +1,8 @@
 import io
 from openpyxl import Workbook
 
-msof = open('msof.txt', "r")
-sof = open('sof.txt', "r")
+msof = open('D:/results/msof.txt', "r")
+sof = open('D:/results/sof.txt', "r")
 temp = []
 
 excel = Workbook()
