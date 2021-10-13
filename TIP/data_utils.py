@@ -7,6 +7,43 @@ import torch
 import random
 
 
+def get_hevc_idx(idx_frame, step):
+    left_frame = 0
+    right_frame = 0
+
+    i = idx_frame // 8  # I frame idx이자 그냥 idx 역할
+    p = idx_frame % 8
+
+    left_I = 0 + i * 8
+    right_I = left_I + 8
+
+    is_b = idx_frame % 2  # 나머지 1이면 무조건 b frame -> 무조건 -1, +1 보면 됨
+
+    if step == 2:  # 2, 4, 8로 나누면 될듯 -> optical flow가 예민하기 때문에 16은 무리
+        if is_b == 1:  # b frame인 경우
+            left_frame = idx_frame - 1
+            right_frame = idx_frame + 1
+
+        elif is_b == 0:
+            left_frame = idx_frame - 2
+            right_frame = idx_frame + 2
+
+    elif step == 4:  # 최대 볼 수 있는 거리가 4라고 가정하자 -> 거리 4 내에 있는 가장 좋은 frame 참고하는 방식으로
+        if p < 4:
+            left_frame = left_I
+            right_frame = left_I + 4
+
+        elif p == 0 or p == 4:
+            left_frame = left_I
+            right_frame = right_I
+
+        else:
+            left_frame = right_I - 4
+            right_frame = right_I
+
+    return left_frame, right_frame
+
+
 def get_msof_idx(idx_frame):
     left_frame = 0
     right_frame = 0
@@ -183,7 +220,6 @@ class TestsetLoader(Dataset):
         self.version = cfg.version
 
     def __getitem__(self, idx):
-
         dir = self.dataset_dir + '/lr_x' + str(self.scale) + '_' + self.degradation
 
         if self.version == 'sof':
@@ -236,7 +272,6 @@ class TestsetLoader(Dataset):
         return 31
 
 
-#
 # class ValidationsetLoader(Dataset):
 #     def __init__(self, cfg, video_name):
 #         super(ValidationsetLoader).__init__()
@@ -247,24 +282,39 @@ class TestsetLoader(Dataset):
 #         self.version = cfg.version
 #         self.video_list = os.listdir(self.dataset_dir)
 #         self.patch_size = cfg.patch_size
+#         self.version = cfg.version
 #
 #     def __getitem__(self, idx_frame):
 #         idx_video = random.randint(0, len(self.video_list) - 1)
-#         idx_frame = random.randint(0, 14)  # lr0~lr16만 참고한다.
+#         if self.version == 'sof':
+#             idx_frame = random.randint(1, 31)  # lr0~lr16만 참고한다.
+#
+#         elif self.version == 'msof':
+#             idx_frame = random.randint(0, 30)
 #
 #         lr_dir = self.dataset_dir + '/' + self.video_list[idx_video] + '/lr_x' + str(
 #             self.scale) + '_' + self.degradation
 #         hr_dir = self.dataset_dir + '/' + self.video_list[idx_video] + '/hr'
 #
-#         left_frame, right_frame = get_msof_idx(idx_frame)
+#         if self.version == 'msof':
+#             left_frame, right_frame = get_msof_idx(idx_frame)
 #
-#         # 중간 frame sr을 위해 양쪽 I frame을 참조한다.
-#         LR0 = Image.open(lr_dir + '/lr' + str(left_frame) + '.png')
-#         LR1 = Image.open(lr_dir + '/lr' + str(idx_frame) + '.png')
-#         LR2 = Image.open(lr_dir + '/lr' + str(right_frame) + '.png')
-#         HR0 = Image.open(hr_dir + '/hr' + str(left_frame) + '.png')
-#         HR1 = Image.open(hr_dir + '/hr' + str(idx_frame) + '.png')
-#         HR2 = Image.open(hr_dir + '/hr' + str(right_frame) + '.png')
+#             # 중간 frame sr을 위해 양쪽 I frame을 참조한다.
+#             LR0 = Image.open(lr_dir + '/lr' + str(left_frame) + '.png')
+#             LR1 = Image.open(lr_dir + '/lr' + str(idx_frame) + '.png')
+#             LR2 = Image.open(lr_dir + '/lr' + str(right_frame) + '.png')
+#             HR0 = Image.open(hr_dir + '/hr' + str(left_frame) + '.png')
+#             HR1 = Image.open(hr_dir + '/hr' + str(idx_frame) + '.png')
+#             HR2 = Image.open(hr_dir + '/hr' + str(right_frame) + '.png')
+#
+#         elif self.version == 'sof':
+#             LR0 = Image.open(lr_dir + '/lr' + str(idx_frame) + '.png')
+#             LR1 = Image.open(lr_dir + '/lr' + str(idx_frame + 1) + '.png')
+#             LR2 = Image.open(lr_dir + '/lr' + str(idx_frame + 2) + '.png')
+#             HR0 = Image.open(hr_dir + '/hr' + str(idx_frame) + '.png')
+#             HR1 = Image.open(hr_dir + '/hr' + str(idx_frame + 1) + '.png')
+#             HR2 = Image.open(hr_dir + '/hr' + str(idx_frame + 2) + '.png')
+#
 #
 #         LR0 = np.array(LR0, dtype=np.float32) / 255.0
 #         LR1 = np.array(LR1, dtype=np.float32) / 255.0
@@ -295,7 +345,10 @@ class TestsetLoader(Dataset):
 #         LR = np.concatenate((LR0, LR1, LR2), axis=2)
 #
 #         # data augmentation
-#         LR, HR = augmentation()(LR, HR)
+#         # LR, HR = augmentation()(LR, HR)
+#
+#         LR = np.ascontiguousarray(LR)
+#         HR = np.ascontiguousarray(HR)
 #
 #         return toTensor(LR), toTensor(HR)
 #
