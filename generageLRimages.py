@@ -1,7 +1,7 @@
 import cv2
 import os
 
-pth = 'D:/dec/frame'
+pth = 'D:/ccna/cnna'
 
 directory = os.listdir(pth)
 
@@ -11,9 +11,11 @@ for i in directory:
     subdir = os.listdir(pth + '/' + i)
 
     lrdir = os.listdir(pth + '/' + i + '/' + subdir[0])
+    print(lrdir)
 
     for j in range(len(lrdir)):
         img = pth + '/' + i + '/' + subdir[0] + '/' + lrdir[j]
+        print(img)
         src = cv2.imread(img, cv2.IMREAD_COLOR)
         dst = cv2.resize(src, dsize=(0, 0), fx=0.25, fy=0.25, interpolation=cv2.INTER_CUBIC)
 

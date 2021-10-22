@@ -36,8 +36,8 @@ def main(cfg):
     # dataloader
     train_set = TrainsetLoader(cfg)
     train_loader = DataLoader(train_set, num_workers=10, batch_size=cfg.batch_size, shuffle=True)
-    val_set = ValidationsetLoader(cfg)
-    val_loader = DataLoader(val_set, num_workers=2, batch_size=32, shuffle=True)
+    # val_set = ValidationsetLoader(cfg)
+    # val_loader = DataLoader(val_set, num_workers=2, batch_size=32, shuffle=True)
 
     # train
     optimizer = torch.optim.Adam(net.parameters(), lr=1e-3)
@@ -61,16 +61,65 @@ def main(cfg):
             HR = HR.cuda()
         LR = LR.view(b, -1, 1, h_lr, w_lr) # batch, frame 갯수, channel수, h, w로 reshape하는 과정
         HR = HR.view(b, -1, 1, h_lr * cfg.scale, w_lr * cfg.scale)
+        print('before net lr: ', LR.shape)
 
         # inference
+        #inference는 16:9로 하는데 loss 구할때는 12:9로 들어가도록 코드 짜야함
         flow_L1, flow_L2, flow_L3, SR = net(LR)
 
+        print("LR shape: ", LR.shape)
+        print("HR shape: ", HR.shape)
+        print("SR shape: ", SR.shape)
+        # batch, channel,
+        LRsize = LR.size()
+        LW = LRsize[4]
+        LH = LRsize[3]
+        HRsize = HR.size()
+        W = HRsize[4]
+        H = HRsize[3]
+        SRsize = SR.size()
+        SH = SRsize[2]
+        SW = SRsize[3]
+        newLR = torch.zeros([b,3,1,LH,round(LW*(3/4))])
+        newHR = torch.zeros([b, 3, 1, H, round(W * (3 / 4))])
+        newSR = torch.zeros([b, 1, 1, H, round(W * (3 / 4))])
+
+        newLR = newLR.cuda()
+        newHR = newHR.cuda()
+        newSR = newSR.cuda()
+
+
+        for i in range(3): # patch도 가로 비율 재조정
+            newLR[:, i] = F.interpolate(LR[:, i], size=(LH, round(LW * (4 / 3))), mode='bilinear', align_corners=False)
+
+        for i in range(3): # frame dimension으로 3번 각각 interpolation 수행함
+            newHR[:,i]=F.interpolate(HR[:,i], size=(H, round(W * (4 / 3))), mode='bilinear', align_corners=False)
+
+        # print("view: ", newHR.shape)
+        # print(newHR[0])
+        # HR = F.interpolate(HR, size=(H, round(W * (3 / 4))), mode='trilinear', align_corners=False) # 가로 3/4 resizing
+        # for j in range(len(SR)):
+        newSR = F.interpolate(SR, size=(SH, round(SW*(4/3))), mode="bilinear", align_corners=False)
+        # SR = F.interpolate(SR, size=(SH, round(SW*(3/4))), mode='trilinear', align_corners=False)
+
+
         # loss
-        loss_SR = criterion(SR, HR[:, idx_center, :, :, :])
+        print("newHR shape: ", len(newHR))
+        loss_SR = criterion(newSR, newHR[:, idx_center, :, :, :])
         loss_OFR = torch.zeros(1).cuda()
+        # print("flow l1 shape: ", np.asarray(flow_L1).shape)
+        # print("flow l2 shape: ", np.asarray(flow_L2).shape)
+        # print("flow l3 shape: ", np.asarray(flow_L3).shape)
+        # exit()
 
         for i in range(n_frames):
             if i != idx_center:
+                # loss_L1 = OFR_loss(F.avg_pool2d(LR[:, i, :, :, :], kernel_size=2),
+                #                    F.avg_pool2d(LR[:, idx_center, :, :, :], kernel_size=2),
+                #                    flow_L1[i])
+                # loss_L2 = OFR_loss(LR[:, i, :, :, :], LR[:, idx_center, :, :, :], flow_L2[i])
+                # loss_L3 = OFR_loss(HR[:, i, :, :, :], HR[:, idx_center, :, :, :], flow_L3[i])
+                # loss_OFR = loss_OFR + loss_L3 + 0.2 * loss_L2 + 0.1 * loss_L1
                 loss_L1 = OFR_loss(F.avg_pool2d(LR[:, i, :, :, :], kernel_size=2),
                                    F.avg_pool2d(LR[:, idx_center, :, :, :], kernel_size=2),
                                    flow_L1[i])
@@ -78,7 +127,9 @@ def main(cfg):
                 loss_L3 = OFR_loss(HR[:, i, :, :, :], HR[:, idx_center, :, :, :], flow_L3[i])
                 loss_OFR = loss_OFR + loss_L3 + 0.2 * loss_L2 + 0.1 * loss_L1
 
+
         loss = loss_SR + 0.01 * loss_OFR / (n_frames - 1)
+        print("loss: ", loss)
         loss_list.append(loss.data.cpu())
 
         # backwards
@@ -90,9 +141,9 @@ def main(cfg):
         if idx_iter % 1000 == 0 or idx_iter == 199999:
             print('Iteration---%6d,   loss---%f' % (idx_iter + 1, np.array(loss_list).mean()))
             if cfg.version == 'msof' and cfg.hevc_step:
-                save_path = 'log/msof/'+ cfg.hevc_step+'/' + cfg.degradation + '_x' + str(cfg.scale)
+                save_path = 'log/msof/'+ str(cfg.hevc_step)+'/' + cfg.degradation + '_x' + str(cfg.scale)
             else:
-                save_path = 'log/sof/'+cfg.hevc_step+'/' + cfg.degradation + '_x' + str(cfg.scale)
+                save_path = 'log/sof/'+str(cfg.hevc_step)+'/' + cfg.degradation + '_x' + str(cfg.scale)
             save_name = cfg.degradation + '_x' + str(cfg.scale) + '_iter' + str(idx_iter) + '.pth'
             if not os.path.exists(save_path):
                 os.mkdir(save_path)

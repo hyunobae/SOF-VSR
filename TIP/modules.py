@@ -30,8 +30,28 @@ class SOFVSR(nn.Module):
         optical_flow_L1, optical_flow_L2, optical_flow_L3 = self.OFR(torch.cat(input, 0))
 
         optical_flow_L1 = optical_flow_L1.view(-1, b, 2, h//2, w//2)
+        # print('opti1 shape: ', optical_flow_L1.shape)
+        # idx, b, c, h, w = optical_flow_L1.size()
+        # newoptL1 = torch.zeros([idx, b, 2, h, round(w*(3/4))])
+        #
+        # for i in range(idx):
+        #     newoptL1[i] = F.interpolate(optical_flow_L1[i], size=(h, round(w*(3/4))), mode='bilinear', align_corners=False)
+        # print('pass l1')
+
+
         optical_flow_L2 = optical_flow_L2.view(-1, b, 2, h, w)
+        # idx, b, c, h, w = optical_flow_L2.size()
+        # newoptL2 = torch.zeros([idx, b, 2, h, round(w * (3 / 4))])
+        # for i in range(idx):
+        #     newoptL2[i] = F.interpolate(optical_flow_L2[i], size=(h, round(w*(3/4))), mode='bilinear', align_corners=False)
+        # print('pass l2')
+
         optical_flow_L3 = optical_flow_L3.view(-1, b, 2, h*self.scale, w*self.scale)
+        # idx, b, c, h, w = optical_flow_L3.size()
+        # newoptL3 = torch.zeros([idx, b, 2, h, round(w * (3 / 4))])
+        # for i in range(idx):
+        #     newoptL3[i] = F.interpolate(optical_flow_L3[i], size=(h, round(w*(3/4))), mode='bilinear', align_corners=False)
+        # print('pass l3')
 
         # motion compensation
         draft_cube = []
@@ -123,6 +143,7 @@ class OFRnet(nn.Module):
         x_L2 = optical_flow_warp(torch.unsqueeze(x[:, 0, :, :], 1), optical_flow_L1_upscaled)
         input_L2 = torch.cat((x_L2, torch.unsqueeze(x[:, 1, :, :], 1), optical_flow_L1_upscaled), 1)
         optical_flow_L2 = self.RNN2(self.RNN1(input_L2)) + optical_flow_L1_upscaled
+        op2_size = optical_flow_L2.shape
 
         #Part 3
         x_L3 = optical_flow_warp(torch.unsqueeze(x[:, 0, :, :], 1), optical_flow_L2)
@@ -200,7 +221,7 @@ def channel_shuffle(x, groups):
     return x
 
 
-def optical_flow_warp(image, image_optical_flow, patch_size):
+def optical_flow_warp(image, image_optical_flow):
     """
     Arguments
         image_ref: reference images tensor, (b, c, h, w)
@@ -209,6 +230,7 @@ def optical_flow_warp(image, image_optical_flow, patch_size):
     b, _ , h, w = image.size()
     grid = np.meshgrid(range(w), range(h))
     grid = np.stack(grid, axis=-1).astype(np.float64) # 그냥 행으로 쌓았음
+
     grid[:, :, 0] = grid[:, :, 0] * 2 / (w - 1) -1 #w축
     grid[:, :, 1] = grid[:, :, 1] * 2 / (h - 1) -1 #h축
     grid = grid.transpose(2, 0, 1) # (32, 32, 2) -> (2, 32, 32)
@@ -217,10 +239,11 @@ def optical_flow_warp(image, image_optical_flow, patch_size):
     if image_optical_flow.is_cuda == True:
         grid = grid.cuda()
 
-    flow_0 = torch.unsqueeze(image_optical_flow[:, 0, :, :] * (patch_size-1) / (w - 1), dim=1)
-    flow_1 = torch.unsqueeze(image_optical_flow[:, 1, :, :] * (patch_size-1) / (h - 1), dim=1)
+    flow_0 = torch.unsqueeze(image_optical_flow[:, 0, :, :] * 31 / (w - 1), dim=1)
+    flow_1 = torch.unsqueeze(image_optical_flow[:, 1, :, :] * 31 / (h - 1), dim=1)
     grid = grid + torch.cat((flow_0, flow_1),1)
     grid = grid.transpose(1, 2) # (128, 2, 32, 32) -> (128, 32, 2, 32)
     grid = grid.transpose(3, 2) # (128, 32, 2, 32) -> (128, 32, 32, 2)
+
     output = F.grid_sample(image, grid, padding_mode='border')
     return output

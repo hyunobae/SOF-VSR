@@ -7,6 +7,8 @@ import numpy as np
 import os
 import argparse
 import torch
+import torch.nn.functional as F
+import cv2
 
 
 def parse_args():
@@ -14,7 +16,7 @@ def parse_args():
     parser.add_argument("--degradation", type=str, default='BI')
     parser.add_argument("--scale", type=int, default=4)
     parser.add_argument('--gpu_mode', type=bool, default=True)
-    parser.add_argument('--testset_dir', type=str, default='data/train/')
+    parser.add_argument('--testset_dir', type=str, default='data/test/Vid4')
     parser.add_argument('--chop_forward', type=bool, default=False)
     parser.add_argument('--version', type=str, default='sof')
     parser.add_argument('--gpu_num', type=int, default=0)
@@ -106,19 +108,31 @@ def main(cfg):
                 SR_y = np.array(SR_y.data.cpu())
 
                 SR_ycbcr = np.concatenate((SR_y, SR_cb, SR_cr), axis=0).transpose(1,2,0)
+                # print('SR_ycbcr shape: ', type(SR_ycbcr.shape))
+                h, w, c = SR_ycbcr.shape
+                print(h, w, c)
+                SR_ycbcr = SR_ycbcr.transpose(2,0,1)
+                # c,h,w
+                SR_ycbcr = torch.Tensor(SR_ycbcr)
+                SR_ycbcr = torch.unsqueeze(SR_ycbcr, 0)
+                SR_ycbcr = F.interpolate(SR_ycbcr, size=(h, round(w*4/3)), mode='bilinear', align_corners=False)
+                SR_ycbcr = torch.squeeze(SR_ycbcr, 0)
+                SR_ycbcr = np.array(SR_ycbcr).transpose(1,2,0)
                 SR_rgb = ycbcr2rgb(SR_ycbcr) * 255.0
                 SR_rgb = np.clip(SR_rgb, 0, 255)
                 SR_rgb = ToPILImage()(np.round(SR_rgb).astype(np.uint8))
 
 
+
+
                 print(idx_iter)
-                if not os.path.exists('results/TVD'):
-                    os.mkdir('results/TVD')
-                if not os.path.exists('results/TVD/' + cfg.degradation + '_x' + str(cfg.scale)):
-                    os.mkdir('results/TVD/' + cfg.degradation + '_x' + str(cfg.scale))
-                if not os.path.exists('results/TVD/' + cfg.degradation + '_x' + str(cfg.scale) + '/' + video_name):
-                    os.mkdir('results/TVD/' + cfg.degradation + '_x' + str(cfg.scale) + '/' + video_name)
-                SR_rgb.save('results/TVD/' + cfg.degradation + '_x' + str(cfg.scale) + '/' + video_name + '/sr_' + str(idx_iter+2).rjust(2,'0') + '.png')
+                if not os.path.exists('results/'+cfg.version):
+                    os.mkdir('results/'+cfg.version)
+                if not os.path.exists('results/'+cfg.version+'/' + cfg.degradation + '_x' + str(cfg.scale)):
+                    os.mkdir('results/'+cfg.version+'/'+ cfg.degradation + '_x' + str(cfg.scale))
+                if not os.path.exists('results/'+cfg.version+'/'+ cfg.degradation + '_x' + str(cfg.scale) + '/' + video_name):
+                    os.mkdir('results/'+cfg.version+'/'+ cfg.degradation + '_x' + str(cfg.scale) + '/' + video_name)
+                SR_rgb.save('results/'+cfg.version+'/' + cfg.degradation + '_x' + str(cfg.scale) + '/' + video_name + '/sr_' + str(idx_iter+2).rjust(2,'0') + '.png')
 
 
 if __name__ == '__main__':

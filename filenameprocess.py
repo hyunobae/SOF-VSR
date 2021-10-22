@@ -1,7 +1,7 @@
 import os
 import shutil
 
-pth = 'D:/dec/frame'
+pth = 'C:/Users/배재현/Desktop/originalSOF/TIP/data/test/tvd'
 
 directory = os.listdir(pth)
 
@@ -17,14 +17,14 @@ for i in directory:  # hr 바꾸기
 
     for j in range(len(lrdir)):  # hr directory
         origname = lrdir[j][:-4]
-        num = origname[5:]
+        #num = origname[5:]
         #imagexx.png
         print(origname)
-        print(num)
-        # fname = origname[:-4]
-        # print(fname)
+        #print(num)
+        fname = origname[5:]
+        print(fname)
 
         os.rename(pth + '/' + i + '/' + subdir[0] + '/' + origname + '.png',
-                    pth + '/' + i + '/' + subdir[0] + '/' + 'hr' + str(int(num)-1) + '.png')
+                    pth + '/' + i + '/' + subdir[0] + '/' + 'hr' + str(int(fname)-1) + '.png')
         print(pth + '/' + i + '/' + subdir[0] + '/' + origname + '.png' + ' -> ' + pth + '/' + i + '/' + subdir[
-            0] + '/' + 'hr' + str(int(num)-1) + '.png')
+            0] + '/' + 'hr' + str(int(fname)-1) + '.png')
