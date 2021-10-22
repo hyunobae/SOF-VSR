@@ -61,15 +61,15 @@ def main(cfg):
             HR = HR.cuda()
         LR = LR.view(b, -1, 1, h_lr, w_lr) # batch, frame 갯수, channel수, h, w로 reshape하는 과정
         HR = HR.view(b, -1, 1, h_lr * cfg.scale, w_lr * cfg.scale)
-        print('before net lr: ', LR.shape)
+        # print('before net lr: ', LR.shape)
 
         # inference
         #inference는 16:9로 하는데 loss 구할때는 12:9로 들어가도록 코드 짜야함
         flow_L1, flow_L2, flow_L3, SR = net(LR)
 
-        print("LR shape: ", LR.shape)
-        print("HR shape: ", HR.shape)
-        print("SR shape: ", SR.shape)
+        # print("LR shape: ", LR.shape)
+        # print("HR shape: ", HR.shape)
+        # print("SR shape: ", SR.shape)
         # batch, channel,
         LRsize = LR.size()
         LW = LRsize[4]
@@ -80,9 +80,9 @@ def main(cfg):
         SRsize = SR.size()
         SH = SRsize[2]
         SW = SRsize[3]
-        newLR = torch.zeros([b,3,1,LH,round(LW*(3/4))])
-        newHR = torch.zeros([b, 3, 1, H, round(W * (3 / 4))])
-        newSR = torch.zeros([b, 1, 1, H, round(W * (3 / 4))])
+        newLR = torch.zeros([b,3,1,LH,round(LW*(4/3))])
+        newHR = torch.zeros([b, 3, 1, H, round(W * (4/3))])
+        newSR = torch.zeros([b, 1, 1, H, round(W * (4/3))])
 
         newLR = newLR.cuda()
         newHR = newHR.cuda()
@@ -93,7 +93,7 @@ def main(cfg):
             newLR[:, i] = F.interpolate(LR[:, i], size=(LH, round(LW * (4 / 3))), mode='bilinear', align_corners=False)
 
         for i in range(3): # frame dimension으로 3번 각각 interpolation 수행함
-            newHR[:,i]=F.interpolate(HR[:,i], size=(H, round(W * (4 / 3))), mode='bilinear', align_corners=False)
+            newHR[:,i] = F.interpolate(HR[:, i], size=(H, round(W * (4 / 3))), mode='bilinear', align_corners=False)
 
         # print("view: ", newHR.shape)
         # print(newHR[0])
@@ -104,7 +104,7 @@ def main(cfg):
 
 
         # loss
-        print("newHR shape: ", len(newHR))
+        # print("newHR shape: ", len(newHR))
         loss_SR = criterion(newSR, newHR[:, idx_center, :, :, :])
         loss_OFR = torch.zeros(1).cuda()
         # print("flow l1 shape: ", np.asarray(flow_L1).shape)

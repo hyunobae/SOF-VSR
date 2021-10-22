@@ -137,6 +137,7 @@ class TrainsetLoader(Dataset):
         self.video_list = os.listdir(cfg.trainset_dir)
         self.degradation = cfg.degradation
         self.version = cfg.version
+        self.step = cfg.hevc_step
 
     def __getitem__(self, idx):
         if self.version == 'sof':
@@ -163,7 +164,7 @@ class TrainsetLoader(Dataset):
                 self.scale) + '_' + self.degradation
             hr_dir = self.trainset_dir + '/' + self.video_list[idx_video] + '/hr'
 
-            left_frame, right_frame = get_msof_idx(idx_frame)
+            left_frame, right_frame = get_hevc_idx(idx_frame, self.step)
 
             # 중간 frame sr을 위해 양쪽 I frame을 참조한다.
             LR0 = Image.open(lr_dir + '/lr' + str(left_frame) + '.png')
@@ -218,6 +219,7 @@ class TestsetLoader(Dataset):
         self.scale = cfg.scale
         self.frame_list = os.listdir(self.dataset_dir + '/lr_x' + str(self.scale) + '_' + self.degradation)
         self.version = cfg.version
+        self.step = cfg.hevc_step
 
     def __getitem__(self, idx):
         dir = self.dataset_dir + '/lr_x' + str(self.scale) + '_' + self.degradation
@@ -228,7 +230,7 @@ class TestsetLoader(Dataset):
             LR2 = Image.open(dir + '/' + 'lr' + str(idx + 2) + '.png')
 
         elif self.version == 'msof':
-            left_frame, right_frame = get_msof_idx(idx)
+            left_frame, right_frame = get_hevc_idx(idx, self.step)
 
             LR0 = Image.open(dir + '/' + 'lr' + str(left_frame) + '.png')
             LR1 = Image.open(dir + '/' + 'lr' + str(idx + 1) + '.png')
