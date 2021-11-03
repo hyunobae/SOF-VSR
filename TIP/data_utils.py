@@ -159,7 +159,7 @@ class TrainsetLoader(Dataset):
 
         elif self.version == 'msof':
             idx_video = random.randint(0, len(self.video_list) - 1)
-            idx_frame = random.randint(1, 31)
+            idx_frame = random.randint(2, 31)
             lr_dir = self.trainset_dir + '/' + self.video_list[idx_video] + '/lr_x' + str(
                 self.scale) + '_' + self.degradation
             hr_dir = self.trainset_dir + '/' + self.video_list[idx_video] + '/hr'
@@ -223,7 +223,7 @@ class TestsetLoader(Dataset):
 
     def __getitem__(self, idx):
         dir = self.dataset_dir + '/lr_x' + str(self.scale) + '_' + self.degradation
-
+        idx = idx + 2
         if self.version == 'sof':
             LR0 = Image.open(dir + '/' + 'lr' + str(idx) + '.png')
             LR1 = Image.open(dir + '/' + 'lr' + str(idx + 1) + '.png')
@@ -245,7 +245,12 @@ class TestsetLoader(Dataset):
         LR1 = LR1.crop([0, 0, W, H])
         LR2 = LR2.crop([0, 0, W, H])
 
-        LR1_bicubic = LR1.resize((W * self.scale, H * self.scale), Image.BICUBIC)
+        LR1_bicubic = LR1.resize((round(W * self.scale * (4 / 3)), H * self.scale), Image.BICUBIC)
+
+        LR1 = LR1.resize((round(W * (4 / 3)), H), Image.BICUBIC)
+        LR0 = LR0.resize((round(W * (4 / 3)), H), Image.BICUBIC)
+        LR2 = LR2.resize((round(W * (4 / 3)), H), Image.BICUBIC)
+
         LR1_bicubic = np.array(LR1_bicubic, dtype=np.float32) / 255.0
 
         LR0 = np.array(LR0, dtype=np.float32) / 255.0
@@ -271,91 +276,93 @@ class TestsetLoader(Dataset):
 
     def __len__(self):
         # return len(self.frame_list) - 2
-        return 31
+        return 29
 
 
-# class ValidationsetLoader(Dataset):
-#     def __init__(self, cfg, video_name):
-#         super(ValidationsetLoader).__init__()
-#         self.dataset_dir = cfg.valset_dir + '/' + video_name
-#         self.degradation = cfg.degradation
-#         self.scale = cfg.scale
-#         self.frame_list = os.listdir(self.dataset_dir + '/lr_x' + str(self.scale) + '_' + self.degradation)
-#         self.version = cfg.version
-#         self.video_list = os.listdir(self.dataset_dir)
-#         self.patch_size = cfg.patch_size
-#         self.version = cfg.version
-#
-#     def __getitem__(self, idx_frame):
-#         idx_video = random.randint(0, len(self.video_list) - 1)
-#         if self.version == 'sof':
-#             idx_frame = random.randint(1, 31)  # lr0~lr16만 참고한다.
-#
-#         elif self.version == 'msof':
-#             idx_frame = random.randint(0, 30)
-#
-#         lr_dir = self.dataset_dir + '/' + self.video_list[idx_video] + '/lr_x' + str(
-#             self.scale) + '_' + self.degradation
-#         hr_dir = self.dataset_dir + '/' + self.video_list[idx_video] + '/hr'
-#
-#         if self.version == 'msof':
-#             left_frame, right_frame = get_msof_idx(idx_frame)
-#
-#             # 중간 frame sr을 위해 양쪽 I frame을 참조한다.
-#             LR0 = Image.open(lr_dir + '/lr' + str(left_frame) + '.png')
-#             LR1 = Image.open(lr_dir + '/lr' + str(idx_frame) + '.png')
-#             LR2 = Image.open(lr_dir + '/lr' + str(right_frame) + '.png')
-#             HR0 = Image.open(hr_dir + '/hr' + str(left_frame) + '.png')
-#             HR1 = Image.open(hr_dir + '/hr' + str(idx_frame) + '.png')
-#             HR2 = Image.open(hr_dir + '/hr' + str(right_frame) + '.png')
-#
-#         elif self.version == 'sof':
-#             LR0 = Image.open(lr_dir + '/lr' + str(idx_frame) + '.png')
-#             LR1 = Image.open(lr_dir + '/lr' + str(idx_frame + 1) + '.png')
-#             LR2 = Image.open(lr_dir + '/lr' + str(idx_frame + 2) + '.png')
-#             HR0 = Image.open(hr_dir + '/hr' + str(idx_frame) + '.png')
-#             HR1 = Image.open(hr_dir + '/hr' + str(idx_frame + 1) + '.png')
-#             HR2 = Image.open(hr_dir + '/hr' + str(idx_frame + 2) + '.png')
-#
-#
-#         LR0 = np.array(LR0, dtype=np.float32) / 255.0
-#         LR1 = np.array(LR1, dtype=np.float32) / 255.0
-#         LR2 = np.array(LR2, dtype=np.float32) / 255.0
-#         HR0 = np.array(HR0, dtype=np.float32) / 255.0
-#         HR1 = np.array(HR1, dtype=np.float32) / 255.0
-#         HR2 = np.array(HR2, dtype=np.float32) / 255.0
-#
-#         # extract Y channel for LR inputs
-#         HR0 = rgb2y(HR0)
-#         HR1 = rgb2y(HR1)
-#         HR2 = rgb2y(HR2)
-#         LR0 = rgb2y(LR0)
-#         LR1 = rgb2y(LR1)
-#         LR2 = rgb2y(LR2)
-#
-#         # crop patchs randomly
-#         HR0, HR1, HR2, LR0, LR1, LR2 = random_crop(HR0, HR1, HR2, LR0, LR1, LR2, self.patch_size, self.scale)
-#
-#         HR0 = HR0[:, :, np.newaxis]
-#         HR1 = HR1[:, :, np.newaxis]
-#         HR2 = HR2[:, :, np.newaxis]
-#         LR0 = LR0[:, :, np.newaxis]
-#         LR1 = LR1[:, :, np.newaxis]
-#         LR2 = LR2[:, :, np.newaxis]
-#
-#         HR = np.concatenate((HR0, HR1, HR2), axis=2)
-#         LR = np.concatenate((LR0, LR1, LR2), axis=2)
-#
-#         # data augmentation
-#         # LR, HR = augmentation()(LR, HR)
-#
-#         LR = np.ascontiguousarray(LR)
-#         HR = np.ascontiguousarray(HR)
-#
-#         return toTensor(LR), toTensor(HR)
-#
-#     def __len__(self):
-#         return self.n_iters
+class ValidationsetLoader(Dataset):
+    def __init__(self, cfg):
+        super(ValidationsetLoader).__init__()
+        self.dataset_dir = cfg.valset_dir
+        self.degradation = cfg.degradation
+        self.scale = cfg.scale
+        self.video_list = os.listdir(self.dataset_dir)
+        self.version = cfg.version
+        self.patch_size = cfg.patch_size
+        self.version = cfg.version
+        self.step = cfg.hevc_step
+        self.n_iters = cfg.n_iters * cfg.batch_size
+        self.batch_size = cfg.batch_size
+
+    def __getitem__(self, idx_frame):
+        idx_video = random.randint(0, len(self.video_list) - 1)
+        if self.version == 'sof':
+            idx_frame = random.randint(1, 31)  # lr0~lr16만 참고한다.
+
+        elif self.version == 'msof':
+            idx_frame = random.randint(2, 30)
+
+        lr_dir = self.dataset_dir + '/' + self.video_list[idx_video] + '/lr_x' + str(
+            self.scale) + '_' + self.degradation
+        hr_dir = self.dataset_dir + '/' + self.video_list[idx_video] + '/hr'
+
+        if self.version == 'msof':
+            left_frame, right_frame = get_hevc_idx(idx_frame, self.step)
+
+            # 중간 frame sr을 위해 양쪽 I frame을 참조한다.
+            LR0 = Image.open(lr_dir + '/lr' + str(left_frame) + '.png')
+            LR1 = Image.open(lr_dir + '/lr' + str(idx_frame) + '.png')
+            LR2 = Image.open(lr_dir + '/lr' + str(right_frame) + '.png')
+            HR0 = Image.open(hr_dir + '/hr' + str(left_frame) + '.png')
+            HR1 = Image.open(hr_dir + '/hr' + str(idx_frame) + '.png')
+            HR2 = Image.open(hr_dir + '/hr' + str(right_frame) + '.png')
+
+        elif self.version == 'sof':
+            LR0 = Image.open(lr_dir + '/lr' + str(idx_frame) + '.png')
+            LR1 = Image.open(lr_dir + '/lr' + str(idx_frame + 1) + '.png')
+            LR2 = Image.open(lr_dir + '/lr' + str(idx_frame + 2) + '.png')
+            HR0 = Image.open(hr_dir + '/hr' + str(idx_frame) + '.png')
+            HR1 = Image.open(hr_dir + '/hr' + str(idx_frame + 1) + '.png')
+            HR2 = Image.open(hr_dir + '/hr' + str(idx_frame + 2) + '.png')
+
+
+        LR0 = np.array(LR0, dtype=np.float32) / 255.0
+        LR1 = np.array(LR1, dtype=np.float32) / 255.0
+        LR2 = np.array(LR2, dtype=np.float32) / 255.0
+        HR0 = np.array(HR0, dtype=np.float32) / 255.0
+        HR1 = np.array(HR1, dtype=np.float32) / 255.0
+        HR2 = np.array(HR2, dtype=np.float32) / 255.0
+
+        # extract Y channel for LR inputs
+        HR0 = rgb2y(HR0)
+        HR1 = rgb2y(HR1)
+        HR2 = rgb2y(HR2)
+        LR0 = rgb2y(LR0)
+        LR1 = rgb2y(LR1)
+        LR2 = rgb2y(LR2)
+
+        # crop patchs randomly
+        HR0, HR1, HR2, LR0, LR1, LR2 = random_crop(HR0, HR1, HR2, LR0, LR1, LR2, self.patch_size, self.scale)
+
+        HR0 = HR0[:, :, np.newaxis]
+        HR1 = HR1[:, :, np.newaxis]
+        HR2 = HR2[:, :, np.newaxis]
+        LR0 = LR0[:, :, np.newaxis]
+        LR1 = LR1[:, :, np.newaxis]
+        LR2 = LR2[:, :, np.newaxis]
+
+        HR = np.concatenate((HR0, HR1, HR2), axis=2)
+        LR = np.concatenate((LR0, LR1, LR2), axis=2)
+
+        # data augmentation
+        # LR, HR = augmentation()(LR, HR)
+
+        LR = np.ascontiguousarray(LR)
+        HR = np.ascontiguousarray(HR)
+
+        return toTensor(LR), toTensor(HR)
+
+    def __len__(self):
+        return self.batch_size #batchsize * iters
 
 
 class augmentation(object):

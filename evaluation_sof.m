@@ -3,24 +3,24 @@ clear
 cd("D:/results")
 %% evaluation on Vid4
 addpath('metrics')
-video_name = dir('D:/results/sof/sof/BI_x4/*');
-gt_video_name = dir('D:/SOF-VSR/TIP/data/train/*');
+video_name = dir('D:/results/16to9/sof/BI_x4/*');
+gt_video_name = dir('D:/decodedData/new/*');
 disp(video_name)
 
 scale = 4;
 degradation = 'BI';
 psnr_vid4 = [];
 ssim_vid4 = [];
-file = fopen('sof.txt', 'w');
+file = fopen('16to9_sof.txt', 'w');
 for idx_video = 1:length(video_name)
     if strcmp(video_name(idx_video).name, '.') == 1 || strcmp(video_name(idx_video).name, '..') == 1
         continue
     end
     psnr_video = [];
     ssim_video = [];
-    for idx_frame = 2:32 				% exclude the first and last 2 frames
-        srname = ['D:/results/sof/sof/BI_x4/' video_name(idx_video).name '/sr_' num2str(idx_frame,'%02d') '.png'];
-        hrname = ['D:/SOF-VSR/TIP/data/train/' video_name(idx_video).name '/hr/hr' num2str(idx_frame,'%d') '.png'];
+    for idx_frame = 2:30 				% exclude the first and last 2 frames
+        srname = ['D:/results/16to9/sof/BI_x4/' video_name(idx_video).name '/sr_' num2str(idx_frame,'%02d') '.png'];
+        hrname = ['D:/decodedData/new/' video_name(idx_video).name '/hr/hr' num2str(idx_frame,'%d') '.png'];
         img_hr = imread(hrname);
         img_sr = imread(srname);
         

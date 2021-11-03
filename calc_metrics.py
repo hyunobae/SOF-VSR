@@ -1,8 +1,8 @@
 import io
 from openpyxl import Workbook
 
-msof = open('D:/results/msof.txt', "r")
-sof = open('D:/results/sof.txt', "r")
+msof = open('D:/results/16to9_msof.txt', "r")
+sof = open('D:/results/16to9_sof.txt', "r")
 temp = []
 
 excel = Workbook()
@@ -29,7 +29,7 @@ while True:
                    str(round(float(float(msof_line[-27:-20]) - float(sof_line[-27:-20])), 4)),
                    msof_line[-7:], sof_line[-7:], str(round(float(float(msof_line[-7:]) - float(sof_line[-7:])), 4))])
 
-excel.save('result.xlsx')
+excel.save('16to9.xlsx')
 
 
 

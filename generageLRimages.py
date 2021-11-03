@@ -1,17 +1,17 @@
 import cv2
 import os
 
-pth = 'D:/ccna/cnna'
+pth = 'D:/val'
 
 directory = os.listdir(pth)
 
-print(directory)
+# print(directory)
 
 for i in directory:
     subdir = os.listdir(pth + '/' + i)
 
     lrdir = os.listdir(pth + '/' + i + '/' + subdir[0])
-    print(lrdir)
+    # print(lrdir)
 
     for j in range(len(lrdir)):
         img = pth + '/' + i + '/' + subdir[0] + '/' + lrdir[j]

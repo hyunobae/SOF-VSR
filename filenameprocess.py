@@ -1,7 +1,7 @@
 import os
 import shutil
 
-pth = 'C:/Users/배재현/Desktop/originalSOF/TIP/data/test/tvd'
+pth = 'C:/Users/배재현/Desktop/val'
 
 directory = os.listdir(pth)
 

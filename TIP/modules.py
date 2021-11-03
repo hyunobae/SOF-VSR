@@ -229,7 +229,7 @@ def optical_flow_warp(image, image_optical_flow):
     """
     b, _ , h, w = image.size()
     grid = np.meshgrid(range(w), range(h))
-    grid = np.stack(grid, axis=-1).astype(np.float64) # 그냥 행으로 쌓았음
+    grid = np.stack(grid, axis=-1).astype(np.float64) # (32, 32, 2) -> (x, y)로 나타냄
 
     grid[:, :, 0] = grid[:, :, 0] * 2 / (w - 1) -1 #w축
     grid[:, :, 1] = grid[:, :, 1] * 2 / (h - 1) -1 #h축
