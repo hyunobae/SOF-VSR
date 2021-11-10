@@ -109,15 +109,15 @@ def main(cfg):
 
                 SR_ycbcr = np.concatenate((SR_y, SR_cb, SR_cr), axis=0).transpose(1,2,0)
                 # print('SR_ycbcr shape: ', type(SR_ycbcr.shape))
-                h, w, c = SR_ycbcr.shape
-                print(h, w, c)
-                SR_ycbcr = SR_ycbcr.transpose(2,0,1)
-                # c,h,w
-                SR_ycbcr = torch.Tensor(SR_ycbcr)
-                SR_ycbcr = torch.unsqueeze(SR_ycbcr, 0)
-                SR_ycbcr = F.interpolate(SR_ycbcr, size=(h, round(w*4/3)), mode='bilinear', align_corners=False)
-                SR_ycbcr = torch.squeeze(SR_ycbcr, 0)
-                SR_ycbcr = np.array(SR_ycbcr).transpose(1,2,0)
+                # h, w, c = SR_ycbcr.shape
+                # print(h, w, c)
+                # SR_ycbcr = SR_ycbcr.transpose(2,0,1)
+                # # c,h,w
+                # SR_ycbcr = torch.Tensor(SR_ycbcr)
+                # SR_ycbcr = torch.unsqueeze(SR_ycbcr, 0)
+                # SR_ycbcr = F.interpolate(SR_ycbcr, size=(h, round(w*4/3)), mode='bilinear', align_corners=False)
+                # SR_ycbcr = torch.squeeze(SR_ycbcr, 0)
+                # SR_ycbcr = np.array(SR_ycbcr).transpose(1,2,0)
                 SR_rgb = ycbcr2rgb(SR_ycbcr) * 255.0
                 SR_rgb = np.clip(SR_rgb, 0, 255)
                 SR_rgb = ToPILImage()(np.round(SR_rgb).astype(np.uint8))

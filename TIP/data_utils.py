@@ -11,7 +11,7 @@ def get_hevc_idx(idx_frame, step):
     left_frame = 0
     right_frame = 0
 
-    i = idx_frame // 8  # I frame idx이자 그냥 idx 역할
+    i = idx_frame // 8  # I frame idx이자 그냥 idx 역할 -> Indicate I frame or P frame
     p = idx_frame % 8
 
     left_I = 0 + i * 8
@@ -19,7 +19,7 @@ def get_hevc_idx(idx_frame, step):
 
     is_b = idx_frame % 2  # 나머지 1이면 무조건 b frame -> 무조건 -1, +1 보면 됨
 
-    if step == 2:  # 2, 4, 8로 나누면 될듯 -> optical flow가 예민하기 때문에 16은 무리
+    if step == 2:  # 2, 4로 나누면 될듯 -> optical flow가 예민하기 때문에 16은 무리
         if is_b == 1:  # b frame인 경우
             left_frame = idx_frame - 1
             right_frame = idx_frame + 1
@@ -143,7 +143,9 @@ class TrainsetLoader(Dataset):
         if self.version == 'sof':
             idx_video = random.randint(0, len(self.video_list) - 1)
             # idx_frame = random.randint(0, 14)  # #frames of training videos is 31, 31-3=28   test로 17장만 사용해본다.
-            idx_frame = random.randint(0, 30)  # lr0~lr32만 참고한다.
+            cnt_frame = len(os.listdir(self.trainset_dir + '/' + self.video_list[idx_video]+ '/' + 'hr'))
+
+            idx_frame = random.randint(0, cnt_frame-3)  # lr0~lr32만 참고한다.
             lr_dir = self.trainset_dir + '/' + self.video_list[idx_video] + '/lr_x' + str(
                 self.scale) + '_' + self.degradation
             hr_dir = self.trainset_dir + '/' + self.video_list[idx_video] + '/hr'
@@ -159,7 +161,9 @@ class TrainsetLoader(Dataset):
 
         elif self.version == 'msof':
             idx_video = random.randint(0, len(self.video_list) - 1)
-            idx_frame = random.randint(2, 31)
+            cnt_frame = len(os.listdir(self.trainset_dir + '/' + self.video_list[idx_video]+ '/' + 'hr'))
+
+            idx_frame = random.randint(2, cnt_frame-3)
             lr_dir = self.trainset_dir + '/' + self.video_list[idx_video] + '/lr_x' + str(
                 self.scale) + '_' + self.degradation
             hr_dir = self.trainset_dir + '/' + self.video_list[idx_video] + '/hr'
@@ -208,7 +212,20 @@ class TrainsetLoader(Dataset):
         return toTensor(LR), toTensor(HR)
 
     def __len__(self):
-        return self.n_iters
+        cnt = 0
+        sofcnt = 0
+        msofcnt = 0
+
+        for i in range(len(self.video_list)):
+            dir = self.trainset_dir + '/' + self.video_list[i] + '/hr'
+            cnt += len(os.listdir(dir))
+            sofcnt += len(os.listdir(dir)) - 2
+            msofcnt += len(os.listdir(dir)) - 4
+
+        if self.version == 'msof':
+            return msofcnt
+        elif self.version == 'sof':
+            return sofcnt
 
 
 class TestsetLoader(Dataset):
@@ -275,8 +292,7 @@ class TestsetLoader(Dataset):
         return LR, SR_cb, SR_cr
 
     def __len__(self):
-        # return len(self.frame_list) - 2
-        return 29
+        return len(self.frame_list) - 4 # 앞에서 2장, 뒤에서 2장 뺀다. (step=2 참조용으로)
 
 
 class ValidationsetLoader(Dataset):
@@ -295,11 +311,14 @@ class ValidationsetLoader(Dataset):
 
     def __getitem__(self, idx_frame):
         idx_video = random.randint(0, len(self.video_list) - 1)
+        cnt_frame = len(os.listdir(self.dataset_dir + '/' + self.video_list[idx_video]+ '/' + 'hr'))
+
+
         if self.version == 'sof':
-            idx_frame = random.randint(1, 31)  # lr0~lr16만 참고한다.
+            idx_frame = random.randint(0, cnt_frame-3)
 
         elif self.version == 'msof':
-            idx_frame = random.randint(2, 30)
+            idx_frame = random.randint(2, cnt_frame-3)
 
         lr_dir = self.dataset_dir + '/' + self.video_list[idx_video] + '/lr_x' + str(
             self.scale) + '_' + self.degradation
@@ -362,7 +381,19 @@ class ValidationsetLoader(Dataset):
         return toTensor(LR), toTensor(HR)
 
     def __len__(self):
-        return self.batch_size #batchsize * iters
+        cnt = 0
+        sofcnt = 0
+        msofcnt = 0
+
+        for i in range(len(self.video_list)):
+            dir = self.dataset_dir + '/' + self.video_list[i] + '/hr'
+            cnt += len(os.listdir(dir))
+            sofcnt += len(os.listdir(dir)) - 2
+            msofcnt += len(os.listdir(dir)) - 4
+
+        if self.version == 'msof': return msofcnt
+        elif self.version == 'sof': return sofcnt
+        #return cnt
 
 
 class augmentation(object):

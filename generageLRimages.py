@@ -1,7 +1,7 @@
 import cv2
 import os
 
-pth = 'D:/val'
+pth = 'D:/decodedData/TVD/low/4to3'
 
 directory = os.listdir(pth)
 

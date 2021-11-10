@@ -119,19 +119,19 @@ def main(cfg):
         optimizer.step()
 
         # save checkpoint
-        if idx_iter % 1000 == 0 or idx_iter == 199999:
+        if idx_iter or idx_iter == 199999:
             print('Iteration---%6d,   loss---%f' % (idx_iter + 1, np.array(loss_list).mean()))
-            if cfg.version == 'msof' and cfg.hevc_step:
-                save_path = 'log/msof/'+ str(cfg.hevc_step)+'/' + cfg.degradation + '_x' + str(cfg.scale)
-            else:
-                save_path = 'log/sof/'+str(cfg.hevc_step)+'/' + cfg.degradation + '_x' + str(cfg.scale)
-            save_name = cfg.degradation + '_x' + str(cfg.scale) + '_iter' + str(idx_iter) + '.pth'
-            if not os.path.exists(save_path):
-                os.mkdir(save_path)
-            torch.save(net.state_dict(), save_path + '/' + save_name)
+            #if cfg.version == 'msof' and cfg.hevc_step:
+            #    save_path = 'log/msof/'+ str(cfg.hevc_step)+'/' + cfg.degradation + '_x' + str(cfg.scale)
+            #else:
+            #    save_path = 'log/sof/'+str(cfg.hevc_step)+'/' + cfg.degradation + '_x' + str(cfg.scale)
+            #save_name = cfg.degradation + '_x' + str(cfg.scale) + '_iter' + str(idx_iter) + '.pth'
+            #if not os.path.exists(save_path):
+            #    os.mkdir(save_path)
+            #torch.save(net.state_dict(), save_path + '/' + save_name)
 
 
-        if idx_iter % 1000:
+        if idx_iter:
             val_loss_list = []
             net.eval()
             with torch.no_grad():

@@ -1,7 +1,7 @@
 import os
 import shutil
 
-pth = 'C:/Users/배재현/Desktop/val'
+pth = 'D:/decodedData/TVD/low/4to3'
 
 directory = os.listdir(pth)
 
