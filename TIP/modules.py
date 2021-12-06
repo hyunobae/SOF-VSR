@@ -30,28 +30,8 @@ class SOFVSR(nn.Module):
         optical_flow_L1, optical_flow_L2, optical_flow_L3 = self.OFR(torch.cat(input, 0))
 
         optical_flow_L1 = optical_flow_L1.view(-1, b, 2, h//2, w//2)
-        # print('opti1 shape: ', optical_flow_L1.shape)
-        # idx, b, c, h, w = optical_flow_L1.size()
-        # newoptL1 = torch.zeros([idx, b, 2, h, round(w*(3/4))])
-        #
-        # for i in range(idx):
-        #     newoptL1[i] = F.interpolate(optical_flow_L1[i], size=(h, round(w*(3/4))), mode='bilinear', align_corners=False)
-        # print('pass l1')
-
-
         optical_flow_L2 = optical_flow_L2.view(-1, b, 2, h, w)
-        # idx, b, c, h, w = optical_flow_L2.size()
-        # newoptL2 = torch.zeros([idx, b, 2, h, round(w * (3 / 4))])
-        # for i in range(idx):
-        #     newoptL2[i] = F.interpolate(optical_flow_L2[i], size=(h, round(w*(3/4))), mode='bilinear', align_corners=False)
-        # print('pass l2')
-
         optical_flow_L3 = optical_flow_L3.view(-1, b, 2, h*self.scale, w*self.scale)
-        # idx, b, c, h, w = optical_flow_L3.size()
-        # newoptL3 = torch.zeros([idx, b, 2, h, round(w * (3 / 4))])
-        # for i in range(idx):
-        #     newoptL3[i] = F.interpolate(optical_flow_L3[i], size=(h, round(w*(3/4))), mode='bilinear', align_corners=False)
-        # print('pass l3')
 
         # motion compensation 이해해야함
         draft_cube = []

@@ -29,104 +29,21 @@ def get_hevc_idx(idx_frame, step):
             right_frame = idx_frame + 2
 
     elif step == 4:  # 최대 볼 수 있는 거리가 4라고 가정하자 -> 거리 4 내에 있는 가장 좋은 frame 참고하는 방식으로
-        if p < 4:
+        if p < 4 and p!=0:
             left_frame = left_I
             right_frame = left_I + 4
 
-        elif p == 4: # 4, 12, ...
+        elif p == 4:  # 4, 12, ...
             left_frame = left_I
             right_frame = right_I
 
-        elif p == 0: # 8, 16, 24, ..
+        elif p == 0:  # 8, 16, 24, ..
             left_frame = left_I - 4
             right_frame = right_I - 4
 
         else:
             left_frame = right_I - 4
             right_frame = right_I
-
-    return left_frame, right_frame
-
-
-def get_msof_idx(idx_frame):
-    left_frame = 0
-    right_frame = 0
-
-    # left I frame, right I frame fix
-    n = idx_frame // 16  # I frame idx
-    left_I = 0 + n * 16
-    right_I = left_I + 16
-
-    p = (idx_frame // 5) + 1  # 0이면 0~4는 5를 참고 -> 몇번째 p block인지 의미함
-
-    # p frame의 idx
-    left_p = left_I + 5  # I다음 나오는 첫번째 P idx, P의 idx
-    mid_p = left_p + 5
-    right_p = right_I - 1
-
-    # 현재 frame이 I, P, B 구분
-    if idx_frame == 0:
-        left_frame = left_I
-        right_frame = left_p
-
-    elif idx_frame % 16 == 0:  # if cur frame is I frame
-        left_frame = idx_frame - 1  # 바로 옆 p frame
-        right_frame = idx_frame + 3  # B 중 좋은 frame
-
-    # if cur frame is P frame
-    elif idx_frame == left_p or idx_frame == mid_p or idx_frame == right_p:  # if cur frame is P frame
-        if idx_frame == left_p:
-            left_frame = idx_frame - 2  # t-2의 B frame
-            right_frame = mid_p
-
-        elif idx_frame == mid_p:
-            left_frame = idx_frame - 2
-            right_frame = right_p
-
-        elif idx_frame == right_p:
-            left_frame = idx_frame - 2
-            right_frame = right_I
-
-    else:  # if cur frame is neither I frame nor P frame -> B
-        # (p-1)은 I와 I 사이에 몇번째 p block인지 판단함 -> p block은 bbbbp를 의미
-        if (p - 1) % 3 == 0:  # cur frame의 좌측 I frame에 인접한 B
-            if idx_frame == (left_p - 1):  # BBB B P에서 ^B^인 경우
-                left_frame = idx_frame - 1
-                right_frame = left_p
-
-            elif idx_frame == left_p - 2:  # p frame -2 는 항상 좋은 B frame이다.
-                left_frame = left_I
-                right_frame = left_p
-
-            else:
-                left_frame = left_I
-                right_frame = left_p - 2
-
-        elif (p - 1) % 3 == 2:  # cur frame의 우측에 I frame이 위치할때
-            if idx_frame == right_p - 1:
-                left_frame = idx_frame - 1
-                right_frame = right_I
-
-            elif idx_frame == right_p - 2:
-                left_frame = mid_p
-                right_frame = right_I
-
-            else:
-                left_frame = mid_p
-                right_frame = right_p - 2
-
-        else:  # 중간 p block인 경우
-            if idx_frame == mid_p - 1:
-                left_frame = idx_frame - 1
-                right_frame = mid_p
-
-            elif idx_frame == mid_p - 2:
-                left_frame = left_p
-                right_frame = mid_p
-
-            else:
-                left_frame = left_p
-                right_frame = mid_p - 2
 
     return left_frame, right_frame
 
@@ -144,12 +61,13 @@ class TrainsetLoader(Dataset):
         self.step = cfg.hevc_step
 
     def __getitem__(self, idx):
+        idx_flag = False
         if self.version == 'sof':
             idx_video = random.randint(0, len(self.video_list) - 1)
             # idx_frame = random.randint(0, 14)  # #frames of training videos is 31, 31-3=28   test로 17장만 사용해본다.
-            cnt_frame = len(os.listdir(self.trainset_dir + '/' + self.video_list[idx_video]+ '/' + 'hr'))
+            cnt_frame = len(os.listdir(self.trainset_dir + '/' + self.video_list[idx_video] + '/' + 'hr'))
 
-            idx_frame = random.randint(0, cnt_frame-3)  # lr0~lr32만 참고한다.
+            idx_frame = random.randint(0, cnt_frame - 3)  # lr0~lr32만 참고한다.
             lr_dir = self.trainset_dir + '/' + self.video_list[idx_video] + '/lr_x' + str(
                 self.scale) + '_' + self.degradation
             hr_dir = self.trainset_dir + '/' + self.video_list[idx_video] + '/hr'
@@ -165,26 +83,56 @@ class TrainsetLoader(Dataset):
 
         elif self.version == 'msof':
             idx_video = random.randint(0, len(self.video_list) - 1)
-            cnt_frame = len(os.listdir(self.trainset_dir + '/' + self.video_list[idx_video]+ '/' + 'hr'))
+            cnt_frame = len(os.listdir(self.trainset_dir + '/' + self.video_list[idx_video] + '/' + 'hr'))
 
-            idx_frame = random.randint(4, cnt_frame-5)
+            idx_frame = random.randint(4, cnt_frame - 9)  # 앞 4개 뒤 8개 (rightframe+4 를 위함)
             lr_dir = self.trainset_dir + '/' + self.video_list[idx_video] + '/lr_x' + str(
                 self.scale) + '_' + self.degradation
             hr_dir = self.trainset_dir + '/' + self.video_list[idx_video] + '/hr'
 
             left_frame, right_frame = get_hevc_idx(idx_frame, self.step)
 
-            # 중간 frame sr을 위해 양쪽 I frame을 참조한다.
-            LR0 = Image.open(lr_dir + '/lr' + str(left_frame) + '.png')
-            LR1 = Image.open(lr_dir + '/lr' + str(idx_frame) + '.png')
-            LR2 = Image.open(lr_dir + '/lr' + str(right_frame) + '.png')
-            HR0 = Image.open(hr_dir + '/hr' + str(left_frame) + '.png')
-            HR1 = Image.open(hr_dir + '/hr' + str(idx_frame) + '.png')
-            HR2 = Image.open(hr_dir + '/hr' + str(right_frame) + '.png')
+            if idx_frame % 8 == 0:
+                idx_flag = True
+                LR0 = Image.open(lr_dir + '/lr' + str(left_frame) + '.png')
+                LR1 = Image.open(lr_dir + '/lr' + str(idx_frame) + '.png')
+                LR2 = Image.open(lr_dir + '/lr' + str(right_frame) + '.png')
+
+                LR3 = Image.open(lr_dir + '/lr' + str(left_frame - 4) + '.png')
+                LR4 = Image.open(lr_dir + '/lr' + str(right_frame + 4) + '.png')
+
+                HR0 = Image.open(hr_dir + '/hr' + str(left_frame) + '.png')
+                HR1 = Image.open(hr_dir + '/hr' + str(idx_frame) + '.png')
+                HR2 = Image.open(hr_dir + '/hr' + str(right_frame) + '.png')
+
+                HR3 = Image.open(hr_dir + '/hr' + str(left_frame - 4) + '.png')
+                HR4 = Image.open(hr_dir + '/hr' + str(right_frame + 4) + '.png')
+
+            else:
+                # 중간 frame sr을 위해 양쪽 I frame을 참조한다.
+                LR0 = Image.open(lr_dir + '/lr' + str(left_frame) + '.png')
+                LR1 = Image.open(lr_dir + '/lr' + str(idx_frame) + '.png')
+                LR2 = Image.open(lr_dir + '/lr' + str(right_frame) + '.png')
+                HR0 = Image.open(hr_dir + '/hr' + str(left_frame) + '.png')
+                HR1 = Image.open(hr_dir + '/hr' + str(idx_frame) + '.png')
+                HR2 = Image.open(hr_dir + '/hr' + str(right_frame) + '.png')
+
+        if idx_flag == True:
+            LR3 = np.array(LR3, dtype=np.float32) / 255.0
+            LR4 = np.array(LR4, dtype=np.float32) / 255.0
+
+            HR3 = np.array(HR3, dtype=np.float32) / 255.0
+            HR4 = np.array(HR4, dtype=np.float32) / 255.0
+
+            HR3 = rgb2y(HR3)
+            HR4 = rgb2y(HR4)
+            LR3 = rgb2y(LR3)
+            LR4 = rgb2y(LR4)
 
         LR0 = np.array(LR0, dtype=np.float32) / 255.0
         LR1 = np.array(LR1, dtype=np.float32) / 255.0
         LR2 = np.array(LR2, dtype=np.float32) / 255.0
+
         HR0 = np.array(HR0, dtype=np.float32) / 255.0
         HR1 = np.array(HR1, dtype=np.float32) / 255.0
         HR2 = np.array(HR2, dtype=np.float32) / 255.0
@@ -198,7 +146,15 @@ class TrainsetLoader(Dataset):
         LR2 = rgb2y(LR2)
 
         # crop patchs randomly
-        HR0, HR1, HR2, LR0, LR1, LR2 = random_crop(HR0, HR1, HR2, LR0, LR1, LR2, self.patch_size, self.scale)
+        if idx_flag == False:
+            HR0, HR1, HR2, LR0, LR1, LR2 = random_crop(HR0, HR1, HR2, LR0, LR1, LR2, self.patch_size, self.scale)
+
+        elif idx_flag == True:
+            HR0, HR1, HR2, HR3, HR4, LR0, LR1, LR2, LR3, LR4 = random_crop5(HR0, HR1, HR2, HR3, HR4, LR0, LR1, LR2, LR3, LR4, self.patch_size, self.scale)
+            HR3 = HR3[:, :, np.newaxis]
+            HR4 = HR4[:, :, np.newaxis]
+            LR3 = HR2[:, :, np.newaxis]
+            LR4 = HR2[:, :, np.newaxis]
 
         HR0 = HR0[:, :, np.newaxis]
         HR1 = HR1[:, :, np.newaxis]
@@ -217,20 +173,7 @@ class TrainsetLoader(Dataset):
 
     def __len__(self):
         return self.n_iters
-        #cnt = 0
-        #sofcnt = 0
-        #msofcnt = 0
 
-        #for i in range(len(self.video_list)):
-        #    dir = self.trainset_dir + '/' + self.video_list[i] + '/hr'
-        #    cnt += len(os.listdir(dir))
-        #    sofcnt += len(os.listdir(dir)) - 2
-        #    msofcnt += len(os.listdir(dir)) - 4
-
-        #if self.version == 'msof':
-        #    return msofcnt
-        #elif self.version == 'sof':
-        #    return sofcnt
 
 
 class TestsetLoader(Dataset):
@@ -293,7 +236,7 @@ class TestsetLoader(Dataset):
         return LR, SR_cb, SR_cr
 
     def __len__(self):
-        return len(self.frame_list) - 4 # 앞에서 2장, 뒤에서 2장 뺀다. (step=2 참조용으로)
+        return len(self.frame_list) - 4  # 앞에서 2장, 뒤에서 2장 뺀다. (step=2 참조용으로)
 
 
 class ValidationsetLoader(Dataset):
@@ -312,14 +255,13 @@ class ValidationsetLoader(Dataset):
 
     def __getitem__(self, idx_frame):
         idx_video = random.randint(0, len(self.video_list) - 1)
-        cnt_frame = len(os.listdir(self.dataset_dir + '/' + self.video_list[idx_video]+ '/' + 'hr'))
-
+        cnt_frame = len(os.listdir(self.dataset_dir + '/' + self.video_list[idx_video] + '/' + 'hr'))
 
         if self.version == 'sof':
-            idx_frame = random.randint(0, cnt_frame-3)
+            idx_frame = random.randint(0, cnt_frame - 3)
 
         elif self.version == 'msof':
-            idx_frame = random.randint(4, cnt_frame-5)
+            idx_frame = random.randint(4, cnt_frame - 5)
 
         lr_dir = self.dataset_dir + '/' + self.video_list[idx_video] + '/lr_x' + str(
             self.scale) + '_' + self.degradation
@@ -343,7 +285,6 @@ class ValidationsetLoader(Dataset):
             HR0 = Image.open(hr_dir + '/hr' + str(idx_frame) + '.png')
             HR1 = Image.open(hr_dir + '/hr' + str(idx_frame + 1) + '.png')
             HR2 = Image.open(hr_dir + '/hr' + str(idx_frame + 2) + '.png')
-
 
         LR0 = np.array(LR0, dtype=np.float32) / 255.0
         LR1 = np.array(LR1, dtype=np.float32) / 255.0
@@ -382,7 +323,7 @@ class ValidationsetLoader(Dataset):
         return toTensor(LR), toTensor(HR)
 
     def __len__(self):
-        return int(self.n_iters/1000)
+        return int(self.n_iters / 1000)
 
 
 class augmentation(object):
@@ -427,6 +368,37 @@ def random_crop(HR0, HR1, HR2, LR0, LR1, LR2, patch_size_lr, scale):
     LR1 = LR1[h_start_lr:h_end_lr, w_start_lr:w_end_lr]
     LR2 = LR2[h_start_lr:h_end_lr, w_start_lr:w_end_lr]
     return HR0, HR1, HR2, LR0, LR1, LR2
+
+
+def random_crop5(HR0, HR1, HR2, HR3, HR4, LR0, LR1, LR2, LR3, LR4, patch_size_lr, scale):
+    h_hr, w_hr = HR0.shape
+    h_lr = h_hr // scale
+    w_lr = w_hr // scale
+    idx_h = random.randint(10, h_lr - patch_size_lr - 10)
+    idx_w = random.randint(10, w_lr - patch_size_lr - 10)
+
+    h_start_hr = (idx_h - 1) * scale
+    h_end_hr = (idx_h - 1 + patch_size_lr) * scale
+    w_start_hr = (idx_w - 1) * scale
+    w_end_hr = (idx_w - 1 + patch_size_lr) * scale
+
+    h_start_lr = idx_h - 1
+    h_end_lr = idx_h - 1 + patch_size_lr
+    w_start_lr = idx_w - 1
+    w_end_lr = idx_w - 1 + patch_size_lr
+
+    HR0 = HR0[h_start_hr:h_end_hr, w_start_hr:w_end_hr]
+    HR1 = HR1[h_start_hr:h_end_hr, w_start_hr:w_end_hr]
+    HR2 = HR2[h_start_hr:h_end_hr, w_start_hr:w_end_hr]
+    HR3 = HR3[h_start_hr:h_end_hr, w_start_hr:w_end_hr]
+    HR4 = HR4[h_start_hr:h_end_hr, w_start_hr:w_end_hr]
+    LR0 = LR0[h_start_lr:h_end_lr, w_start_lr:w_end_lr]
+    LR1 = LR1[h_start_lr:h_end_lr, w_start_lr:w_end_lr]
+    LR2 = LR2[h_start_lr:h_end_lr, w_start_lr:w_end_lr]
+    LR3 = LR0[h_start_lr:h_end_lr, w_start_lr:w_end_lr]
+    LR4 = LR1[h_start_lr:h_end_lr, w_start_lr:w_end_lr]
+
+    return HR0, HR1, HR2, HR3, HR4, LR0, LR1, LR2, LR3, LR4
 
 
 def toTensor(img):
