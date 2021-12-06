@@ -16,10 +16,11 @@ def parse_args():
     parser.add_argument("--degradation", type=str, default='BI')
     parser.add_argument("--scale", type=int, default=4)
     parser.add_argument('--gpu_mode', type=bool, default=True)
-    parser.add_argument('--testset_dir', type=str, default='data/test/Vid4')
+    parser.add_argument('--testset_dir', type=str, default='data/Vid4')
     parser.add_argument('--chop_forward', type=bool, default=False)
     parser.add_argument('--version', type=str, default='sof')
     parser.add_argument('--gpu_num', type=int, default=0)
+    parser.add_argument('--hevc_step', type=int, default=2)
     return parser.parse_args()
 
 
@@ -63,7 +64,7 @@ def chop_forward(x, model, scale, shave=16, min_size=5000, nGPUs=1):
 def main(cfg):
     # model
     net = SOFVSR(cfg, is_training=False)
-    ckpt = torch.load('./log/'+ cfg.version +'/' + cfg.degradation + '_x' + str(cfg.scale) + '.pth')
+    ckpt = torch.load('./log/'+ cfg.version +'/'+str(cfg.hevc_step)+'/'+'BI_x4'+ '/' + cfg.degradation + '_x' + str(cfg.scale) + '.pth')
     net.load_state_dict(ckpt)
     torch.cuda.set_device(cfg.gpu_num)
     print(torch.cuda.current_device())
@@ -126,13 +127,13 @@ def main(cfg):
 
 
                 print(idx_iter)
-                if not os.path.exists('results/'+cfg.version):
-                    os.mkdir('results/'+cfg.version)
-                if not os.path.exists('results/'+cfg.version+'/' + cfg.degradation + '_x' + str(cfg.scale)):
-                    os.mkdir('results/'+cfg.version+'/'+ cfg.degradation + '_x' + str(cfg.scale))
-                if not os.path.exists('results/'+cfg.version+'/'+ cfg.degradation + '_x' + str(cfg.scale) + '/' + video_name):
-                    os.mkdir('results/'+cfg.version+'/'+ cfg.degradation + '_x' + str(cfg.scale) + '/' + video_name)
-                SR_rgb.save('results/'+cfg.version+'/' + cfg.degradation + '_x' + str(cfg.scale) + '/' + video_name + '/sr_' + str(idx_iter+2).rjust(2,'0') + '.png')
+                if not os.path.exists('results/Vid4/'+cfg.version):
+                    os.mkdir('results/Vid4/'+cfg.version)
+                if not os.path.exists('results/Vid4/'+cfg.version+'/' + cfg.degradation + '_x' + str(cfg.scale)):
+                    os.mkdir('results/Vid4/'+cfg.version+'/'+ cfg.degradation + '_x' + str(cfg.scale))
+                if not os.path.exists('results/Vid4/'+cfg.version+'/'+ cfg.degradation + '_x' + str(cfg.scale) + '/' + video_name):
+                    os.mkdir('results/Vid4/'+cfg.version+'/'+ cfg.degradation + '_x' + str(cfg.scale) + '/' + video_name)
+                SR_rgb.save('results/Vid4/'+cfg.version+'/' + cfg.degradation + '_x' + str(cfg.scale) + '/' + video_name + '/sr_' + str(idx_iter+2).rjust(2,'0') + '.png')
 
 
 if __name__ == '__main__':

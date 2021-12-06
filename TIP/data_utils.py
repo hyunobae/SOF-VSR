@@ -163,7 +163,7 @@ class TrainsetLoader(Dataset):
             idx_video = random.randint(0, len(self.video_list) - 1)
             cnt_frame = len(os.listdir(self.trainset_dir + '/' + self.video_list[idx_video]+ '/' + 'hr'))
 
-            idx_frame = random.randint(2, cnt_frame-3)
+            idx_frame = random.randint(4, cnt_frame-5)
             lr_dir = self.trainset_dir + '/' + self.video_list[idx_video] + '/lr_x' + str(
                 self.scale) + '_' + self.degradation
             hr_dir = self.trainset_dir + '/' + self.video_list[idx_video] + '/hr'
@@ -212,20 +212,21 @@ class TrainsetLoader(Dataset):
         return toTensor(LR), toTensor(HR)
 
     def __len__(self):
-        cnt = 0
-        sofcnt = 0
-        msofcnt = 0
+        return self.n_iters
+        #cnt = 0
+        #sofcnt = 0
+        #msofcnt = 0
 
-        for i in range(len(self.video_list)):
-            dir = self.trainset_dir + '/' + self.video_list[i] + '/hr'
-            cnt += len(os.listdir(dir))
-            sofcnt += len(os.listdir(dir)) - 2
-            msofcnt += len(os.listdir(dir)) - 4
+        #for i in range(len(self.video_list)):
+        #    dir = self.trainset_dir + '/' + self.video_list[i] + '/hr'
+        #    cnt += len(os.listdir(dir))
+        #    sofcnt += len(os.listdir(dir)) - 2
+        #    msofcnt += len(os.listdir(dir)) - 4
 
-        if self.version == 'msof':
-            return msofcnt
-        elif self.version == 'sof':
-            return sofcnt
+        #if self.version == 'msof':
+        #    return msofcnt
+        #elif self.version == 'sof':
+        #    return sofcnt
 
 
 class TestsetLoader(Dataset):
@@ -240,7 +241,8 @@ class TestsetLoader(Dataset):
 
     def __getitem__(self, idx):
         dir = self.dataset_dir + '/lr_x' + str(self.scale) + '_' + self.degradation
-        idx = idx + 2
+        #idx = idx + 1
+        idx = idx + 3
         if self.version == 'sof':
             LR0 = Image.open(dir + '/' + 'lr' + str(idx) + '.png')
             LR1 = Image.open(dir + '/' + 'lr' + str(idx + 1) + '.png')
@@ -262,11 +264,7 @@ class TestsetLoader(Dataset):
         LR1 = LR1.crop([0, 0, W, H])
         LR2 = LR2.crop([0, 0, W, H])
 
-        LR1_bicubic = LR1.resize((round(W * self.scale * (4 / 3)), H * self.scale), Image.BICUBIC)
-
-        LR1 = LR1.resize((round(W * (4 / 3)), H), Image.BICUBIC)
-        LR0 = LR0.resize((round(W * (4 / 3)), H), Image.BICUBIC)
-        LR2 = LR2.resize((round(W * (4 / 3)), H), Image.BICUBIC)
+        LR1_bicubic = LR1.resize((W * self.scale, H * self.scale), Image.BICUBIC)
 
         LR1_bicubic = np.array(LR1_bicubic, dtype=np.float32) / 255.0
 
@@ -292,7 +290,8 @@ class TestsetLoader(Dataset):
         return LR, SR_cb, SR_cr
 
     def __len__(self):
-        return len(self.frame_list) - 4 # 앞에서 2장, 뒤에서 2장 뺀다. (step=2 참조용으로)
+        return len(self.frame_list) - 8 # step 4인 경우
+        #return len(self.frame_list) - 4 # 앞에서 2장, 뒤에서 2장 뺀다. (step=2 참조용으로)
 
 
 class ValidationsetLoader(Dataset):
@@ -318,7 +317,7 @@ class ValidationsetLoader(Dataset):
             idx_frame = random.randint(0, cnt_frame-3)
 
         elif self.version == 'msof':
-            idx_frame = random.randint(2, cnt_frame-3)
+            idx_frame = random.randint(4, cnt_frame-5)
 
         lr_dir = self.dataset_dir + '/' + self.video_list[idx_video] + '/lr_x' + str(
             self.scale) + '_' + self.degradation
@@ -381,19 +380,7 @@ class ValidationsetLoader(Dataset):
         return toTensor(LR), toTensor(HR)
 
     def __len__(self):
-        cnt = 0
-        sofcnt = 0
-        msofcnt = 0
-
-        for i in range(len(self.video_list)):
-            dir = self.dataset_dir + '/' + self.video_list[i] + '/hr'
-            cnt += len(os.listdir(dir))
-            sofcnt += len(os.listdir(dir)) - 2
-            msofcnt += len(os.listdir(dir)) - 4
-
-        if self.version == 'msof': return msofcnt
-        elif self.version == 'sof': return sofcnt
-        #return cnt
+        return int(self.n_iters/1000)
 
 
 class augmentation(object):
